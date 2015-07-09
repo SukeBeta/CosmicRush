@@ -20,7 +20,9 @@ Player.prototype.handleInput = function() {
 
 Player.prototype.handleMovement = function() {
     var moving = true;
+    var self = this;
 
+    // Keyboard control
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
         this.body.velocity.y = 0;
         this.body.velocity.x = -this.speed;
@@ -37,6 +39,16 @@ Player.prototype.handleMovement = function() {
         moving = false;
         this.freeze();
     }
+
+    // Gyro control
+    // setting gyroscope update frequency
+    gyro.frequency = 10;
+    // start gyroscope detection
+    gyro.startTracking(function(o) {
+        // updating player velocity
+        self.body.velocity.x += o.gamma/10;
+        self.body.velocity.y += o.beta/10;
+    });
 
     if(moving)  {
         // Send move player message

@@ -9,7 +9,13 @@ A prototype real-time multiplayer game which uses Phaser, Node.js and Socket.IO.
 * run `node server.js`
 * Visit http://localhost:8000/
 
+## Local test on mobile phones
+* connect to same wifi with mobile phone
+* `ifconfig` to find the ip address
+* use mobile browser to visit the address
+
 ## Useful Materials
+[gyro.js](http://tomg.co/gyrojs)
 
 ## License
 
