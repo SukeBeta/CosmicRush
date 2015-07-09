@@ -26,8 +26,15 @@ BasicGame.Game.prototype = {
     create: function () {
         this.game.stage.backgroundColor = '#71c5cf';
 
+        // set world bound
+        this.game.world.setBounds(0,0,1600,1600);
+
+        // create player
         BasicGame.player = new Player(null, this.rnd.integerInRange(0, 400), this.rnd.integerInRange(0, 400));
         BasicGame.remotePlayers = [];
+
+        // camera follows the player
+        this.game.camera.follow(BasicGame.player);
 
         // Start listening for events
         this.setEventHandlers();

@@ -10,6 +10,9 @@ var Player = function(id, x, y){
     Phaser.Sprite.call(this, game, x, y, 'player');
     game.physics.enable(this, Phaser.Physics.ARCADE);
     game.add.existing(this);
+
+    // player can move within the boundaries
+    this.body.collideWorldBounds = true;
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
