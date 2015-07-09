@@ -36,7 +36,7 @@ Player.prototype.handleMovement = function() {
         this.body.velocity.x = 0;
         this.body.velocity.y = this.speed;
     } else {
-        moving = false;
+        //moving = false;
         this.freeze();
     }
 
