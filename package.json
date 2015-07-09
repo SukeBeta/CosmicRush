@@ -1,0 +1,15 @@
+{
+  "name": "html5_multiplayer",
+  "author" : "Yunen",
+  "description": ".",
+  "license": "MIT",
+  "version": "1.0.0",
+  "dependencies": {
+    "express": "^4.12.4",
+    "socket.io": "^1.3.5",
+    "underscore": "^1.8.3"
+  },
+  "engine": {
+    "node": "^0.10.33"
+  }
+}
