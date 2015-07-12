@@ -19,9 +19,13 @@ var Player = require("./entities/Player");
 // Game variables
 var players = null;
 
+// Broadcast updates every 100 ms
+var updateInterval = 100;
+
 // Set up Node http server
 app.use(express.static("../client"));
 server.listen(process.env.PORT || 8000);
+
 
 // Run the server
 init();
@@ -53,19 +57,19 @@ function onSocketConnection(socket) {
 }
 
 function onNewPlayer(data) {
-    var newPlayer = new Player(this.id, data.x, data.y);
+    var newPlayer = new Player(this.id, data.x, data.y, data.character);
 
     // Assign an ID to the new player
     this.emit("assign an ID", {id: this.id});
 
     // Broadcast new player to connected socket clients
-    this.broadcast.emit("new player", {id: this.id, x: data.x, y: data.y});
+    this.broadcast.emit("new player", {id: this.id, x: data.x, y: data.y, character: data.character});
 
     // Send existing players to the new player
     var i, existingPlayer;
     for (i = 0; i < players.length; i++) {
         existingPlayer = players[i];
-        this.emit("new player", {id: existingPlayer.getID(), x: existingPlayer.getX(), y: existingPlayer.getY()});
+        this.emit("new player", {id: existingPlayer.getID(), x: existingPlayer.getX(), y: existingPlayer.getY(), character: existingPlayer.getCharacter()});
     }
 
     // Add new player to the players array
@@ -91,6 +95,7 @@ function onMovePlayer(data) {
     movePlayer.setY(data.y);
 
     // Broadcast updated position to connected socket clients
+    // console.log("Player moves to: ", movePlayer.getX() + " " , movePlayer.getY());
     this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
 }
 

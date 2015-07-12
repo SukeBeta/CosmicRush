@@ -8,6 +8,13 @@
     <script src="game/vendor/gyro.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
 
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+
 </head>
 <body>
 
@@ -27,11 +34,13 @@
 
     <script>
         // Global variables
-        window.game = new Phaser.Game(320, 480, Phaser.AUTO, 'gameContainer');
+        window.game = new Phaser.Game("100%", "100%", Phaser.AUTO, 'gameContainer');
 
         // TODO: change the localhost to server IP address
         // window.socket = io.connect('http://localhost:8000');
         window.socket = io.connect('http://192.168.3.5:8000');
+
+        window.scaleRatio = window.devicePixelRatio/2;
 
         startGame();
 

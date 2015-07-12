@@ -18,23 +18,26 @@ BasicGame.Game = function (game) {
     this.world;     //  the game world (Phaser.World)
     this.particles; //  the particle manager (Phaser.Particles)
     this.physics;   //  the physics manager (Phaser.Physics)
-    this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator)
+    this.rnd;       //  the repeatable random number generator (Phaser.RandomDataGenerator),
+    this.scaleRatio = window.scaleRatio;
 };
 
 BasicGame.Game.prototype = {
 
     create: function () {
+
         this.game.stage.backgroundColor = '#71c5cf';
 
-        // set world bound
-        this.game.world.setBounds(0,0,1600,1600);
+        this.game.add.tileSprite(0, 0, 1920, 1920, 'background');
+        this.game.world.setBounds(0, 0, 1920, 1920);
 
-        // create player
-        BasicGame.player = new Player(null, this.rnd.integerInRange(0, 400), this.rnd.integerInRange(0, 400));
-        BasicGame.remotePlayers = [];
-
-        // camera follows the player
+        BasicGame.character = _.random(0, 8);
+        BasicGame.player = new Player(null, this.rnd.integerInRange(0, 400), this.rnd.integerInRange(0, 400), BasicGame.character);
+        BasicGame.player.scale.setTo(this.scaleRatio, this.scaleRatio);
         this.game.camera.follow(BasicGame.player);
+
+
+        BasicGame.remotePlayers = [];
 
         // Start listening for events
         this.setEventHandlers();
@@ -77,7 +80,7 @@ BasicGame.Game.prototype = {
         console.log("Connected to socket server");
 
         // Send local player data to the game server
-        socket.emit("new player", {x: BasicGame.player.x, y: BasicGame.player.y});
+        socket.emit("new player", {x: BasicGame.player.x, y: BasicGame.player.y, character: BasicGame.character});
     },
 
     // Socket disconnected
@@ -97,7 +100,10 @@ BasicGame.Game.prototype = {
     onNewPlayer: function(data) {
         console.log("New player connected: "+ data.id);
 
-        BasicGame.remotePlayers.push(new RemotePlayer(data.id, data.x, data.y));
+        var newPlayer = new RemotePlayer(data.id, data.x, data.y, data.character);
+        newPlayer.scale.setTo(window.scaleRatio, window.scaleRatio);
+
+        BasicGame.remotePlayers.push(newPlayer);
     },
 
     // One player is moving

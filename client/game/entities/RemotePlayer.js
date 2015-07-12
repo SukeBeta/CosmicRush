@@ -3,13 +3,45 @@
  */
 var DEFAULT_PLAYER_SPEED = 180;
 
-var RemotePlayer = function(id, x, y){
+var RemotePlayer = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
     this.lastPosition = { x: x, y: y };
+    this.image = "";
 
-    Phaser.Sprite.call(this, game, x, y, 'player');
+    switch (character) {
+        case 0:
+            this.image = "p01";
+            break;
+        case 1:
+            this.image = "p02";
+            break;
+        case 2:
+            this.image = "p03";
+            break;
+        case 3:
+            this.image = "p04";
+            break;
+        case 4:
+            this.image = "p05";
+            break;
+        case 5:
+            this.image = "p06";
+            break;
+        case 6:
+            this.image = "p07";
+            break;
+        case 7:
+            this.image = "p08";
+            break;
+        case 8:
+            this.image = "p09";
+            break;
+    }
+
+    Phaser.Sprite.call(this, game, x, y, this.image);
     game.physics.enable(this, Phaser.Physics.ARCADE);
+    this.body.collideWorldBounds=true;
     game.add.existing(this);
 };
 
