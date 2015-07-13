@@ -57,19 +57,22 @@ function onSocketConnection(socket) {
 }
 
 function onNewPlayer(data) {
-    var newPlayer = new Player(this.id, data.x, data.y, data.character);
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    var newPlayer = new Player(this.id, data.x, data.y, data.character, data.mass, data.point);
 
     // Assign an ID to the new player
     this.emit("assign an ID", {id: this.id});
 
     // Broadcast new player to connected socket clients
-    this.broadcast.emit("new player", {id: this.id, x: data.x, y: data.y, character: data.character});
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    this.broadcast.emit("new player", {id: this.id, x: data.x, y: data.y, character: data.character, mass: data.mass, point: data.point});
 
     // Send existing players to the new player
     var i, existingPlayer;
     for (i = 0; i < players.length; i++) {
         existingPlayer = players[i];
-        this.emit("new player", {id: existingPlayer.getID(), x: existingPlayer.getX(), y: existingPlayer.getY(), character: existingPlayer.getCharacter()});
+        //TODO: (Delete after check) ADD by Geyang 13 Jul
+        this.emit("new player", {id: existingPlayer.getID(), x: existingPlayer.getX(), y: existingPlayer.getY(), character: existingPlayer.getCharacter(), mass: existingPlayer.getMass(), point: existingPlayer.getPoint()});
     }
 
     // Add new player to the players array
@@ -94,9 +97,17 @@ function onMovePlayer(data) {
     movePlayer.setX(data.x);
     movePlayer.setY(data.y);
 
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    // Update player mass and point
+    movePlayer.setMass(data.mass);
+    movePlayer.setPoint(data.point);
+
+    //TODO:计算吃，游戏逻辑加在这里
+
     // Broadcast updated position to connected socket clients
     // console.log("Player moves to: ", movePlayer.getX() + " " , movePlayer.getY());
-    this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY()});
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), mass: movePlayer.getMass(), point: movePlayer.getPoint()});
 }
 
 function onClientDisconnect() {

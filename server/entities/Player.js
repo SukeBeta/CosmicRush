@@ -2,11 +2,14 @@
  * Created by Yunen on 27/05/15.
  */
 
-var Player = function(id, x, y, character) {
+var Player = function(id, x, y, character, mass, point) {
     this.id = id;
     this.x = x;
     this.y = y;
     this.character = character;
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    this.mass = mass;
+    this.point = point;
 };
 
 Player.prototype = {
@@ -27,6 +30,19 @@ Player.prototype = {
     },
     setY: function(y) {
         this.y = y;
+    },
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    getMass: function() {
+        return this.mass;
+    },
+    setMass: function(mass) {
+        this.mass = mass;
+    },
+    getPoint: function() {
+        return this.point;
+    },
+    setPoint: function(point) {
+        this.point = point;
     }
 };
 

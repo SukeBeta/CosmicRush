@@ -1,13 +1,26 @@
 /**
  * Created by Yunen on 27/05/15.
  */
-var DEFAULT_PLAYER_SPEED = 180;
 
-var RemotePlayer = function(id, x, y, character){
+/**
+ * Modified by Geyang
+ * add mass and point to constructor
+ */
+
+var DEFAULT_PLAYER_SPEED = 180;
+var MASS_SPEED_CONSTANT = 100;
+
+var RemotePlayer = function(id, x, y, character, mass, point){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
     this.lastPosition = { x: x, y: y };
     this.image = "";
+    
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    this.mass = mass;
+    this.point = point;
+    this.speed_factor = MASS_SPEED_CONSTANT/this.mass;
+    this.radius = Math.sqrt(this.mass);
 
     switch (character) {
         case 0:

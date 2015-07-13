@@ -80,7 +80,8 @@ BasicGame.Game.prototype = {
         console.log("Connected to socket server");
 
         // Send local player data to the game server
-        socket.emit("new player", {x: BasicGame.player.x, y: BasicGame.player.y, character: BasicGame.character});
+        //TODO: (Delete after check) ADD by Geyang 13 Jul
+        socket.emit("new player", {x: BasicGame.player.x, y: BasicGame.player.y, character: BasicGame.character, mass: BasicGame.mass, point: BasicGame.point});
     },
 
     // Socket disconnected
@@ -100,7 +101,8 @@ BasicGame.Game.prototype = {
     onNewPlayer: function(data) {
         console.log("New player connected: "+ data.id);
 
-        var newPlayer = new RemotePlayer(data.id, data.x, data.y, data.character);
+        //TODO: (Delete after check) ADD by Geyang 13 Jul
+        var newPlayer = new RemotePlayer(data.id, data.x, data.y, data.character, data.mass, data.point);
         newPlayer.scale.setTo(window.scaleRatio, window.scaleRatio);
 
         BasicGame.remotePlayers.push(newPlayer);

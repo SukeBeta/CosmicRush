@@ -2,11 +2,27 @@
  * Created by Yunen on 26/05/15.
  */
 var DEFAULT_PLAYER_SPEED = 180;
+var MASS_SPEED_CONSTANT = 100;
 
 var Player = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
     this.image = "";
+
+    // mass: player quits when mass < 5
+    this.mass = 10;
+
+    /**
+     * speed_factor concept:
+     * speed_factor * mass = constant
+     * radius^2 ~ mass
+     * TODO:speed_factor should determine speed_limit or responsiveness?
+     */
+    this.speed_factor = MASS_SPEED_CONSTANT/this.mass;
+    this.radius = Math.sqrt(this.mass);
+
+    // point: accumulated score
+    this.point = 0;
 
     switch (character) {
         case 0:
@@ -73,10 +89,12 @@ Player.prototype.handleMovement = function() {
     // start gyroscope detection
     gyro.startTracking(function(o) {
         // updating player velocity
-        self.body.velocity.x += o.gamma/1000;
-        self.body.velocity.y += o.beta/1000;
+        //TODO: Add speed_factor
+        self.body.velocity.x += o.gamma/5000 * self.speed_factor;
+        self.body.velocity.y += o.beta/5000 * self.speed_factor;
     });
 
     // Send move player message
-    socket.emit("move player", {id: this.id, x: this.position.x, y: this.position.y});
+    //TODO: (Delete after check) ADD by Geyang 13 Jul
+    socket.emit("move player", {id: this.id, x: this.position.x, y: this.position.y, mass: this.mass, point: this.point});
 };
