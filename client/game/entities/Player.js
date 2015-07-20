@@ -2,7 +2,7 @@
  * Created by Yunen on 26/05/15.
  */
 var DEFAULT_PLAYER_SPEED = 180;
-var MASS_SPEED_CONSTANT = 500000000000;
+var MASS_SPEED_CONSTANT = 5000000000;
 
 var Player = function(id, x, y, character){
     this.id = id;
@@ -89,10 +89,9 @@ Player.prototype.handleMovement = function() {
     // start gyroscope detection
     gyro.startTracking(function(o) {
         // updating player velocity
-        //TODO: Modify speed_factor for better control
-        // TODO: BUG, self.speed_factor is not passed!!!
-        self.body.velocity.x = Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
-        self.body.velocity.y = Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
+        // Modify speed_factor for better control
+        self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
+        self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
     });
 
     // Send move player message
