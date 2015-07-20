@@ -9,7 +9,7 @@
  * @param y
  * @constructor
  */
-var Food = function(id, x, y) {
+var Dot = function(id, x, y) {
     this.id = id;
     this.x = x;
     this.y = y;
@@ -20,7 +20,7 @@ var Food = function(id, x, y) {
     this.sprite = game.add.sprite(x,y,circle);
 };
 
-Food.prototype.generateCircle = function(color) {
+Dot.prototype.generateCircle = function(color) {
     var bitmapSize = 8;
     var circle = game.add.bitmapData(bitmapSize, bitmapSize);
     circle.ctx.fillStyle = color;
@@ -32,16 +32,16 @@ Food.prototype.generateCircle = function(color) {
 };
 
 /**
- *  generate a color from the list for the Food
+ *  generate a color from the list for the Dot
  */
-Food.prototype.generateColor = function() {
+Dot.prototype.generateColor = function() {
     var colors = ['#234F3','#FF0000','#00FF00'];
     return colors[Math.floor(Math.random()*colors.length)];
 };
 
 /**
- * remove this food from map
+ * remove this dot from map
  */
-Food.prototype.remove = function(){
+Dot.prototype.remove = function(){
     this.sprite.destroy();
 };

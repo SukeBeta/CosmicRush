@@ -15,9 +15,11 @@ var _ = require('underscore');
 
 // Game objects
 var Player = require("./entities/Player");
+var Dot = require("./entities/Dot");
 
 // Game variables
 var players = null;
+var dots = null;
 
 // Broadcast updates every 100 ms
 var updateInterval = 100;
@@ -33,6 +35,7 @@ init();
 // Initialization
 function init() {
     players = [];
+    dots = [];
     setEventHandlers();
 }
 
@@ -54,6 +57,8 @@ function onSocketConnection(socket) {
 
     // Listen for move player message
     socket.on("move player", onMovePlayer);
+
+    // TODO:如何设置定期broadcast?比如新食物？
 }
 
 function onNewPlayer(data) {
@@ -131,4 +136,11 @@ function onClientDisconnect() {
 
     // Broadcast removed player to connected socket clients
     this.broadcast.emit("remove player", {id: this.id});
+}
+
+/**
+ * TODO:Generate a new dot on map
+ */
+function onNewDot() {
+
 }

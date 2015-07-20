@@ -36,8 +36,8 @@ BasicGame.Game.prototype = {
         BasicGame.player.scale.setTo(this.scaleRatio, this.scaleRatio);
         this.game.camera.follow(BasicGame.player);
 
-        //TODO:(Delete after test) test food.js
-        BasicGame.Food = new Food(1, 100, 100);
+        //TODO:(Delete after test) test Dot.js
+        BasicGame.Food = new Dot(1, 100, 100);
 
 
         BasicGame.remotePlayers = [];
