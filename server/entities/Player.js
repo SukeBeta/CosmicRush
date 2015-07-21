@@ -2,16 +2,30 @@
  * Created by Yunen on 27/05/15.
  */
 
+
+/**
+ * Player Constructor
+ * @param id
+ * @param x
+ * @param y
+ * @param character
+ * @param mass
+ * @param point
+ * @constructor
+ */
 var Player = function(id, x, y, character, mass, point) {
     this.id = id;
     this.x = x;
     this.y = y;
     this.character = character;
-    //TODO: (Delete after check) ADD by Geyang 13 Jul
     this.mass = mass;
     this.point = point;
 };
 
+/**
+ * Player methods
+ * @type {{getID: Function, getX: Function, getY: Function, getCharacter: Function, setX: Function, setY: Function, getMass: Function, setMass: Function, getPoint: Function, setPoint: Function}}
+ */
 Player.prototype = {
     getID: function() {
         return this.id;
@@ -31,7 +45,6 @@ Player.prototype = {
     setY: function(y) {
         this.y = y;
     },
-    //TODO: (Delete after check) ADD by Geyang 13 Jul
     getMass: function() {
         return this.mass;
     },
@@ -46,4 +59,5 @@ Player.prototype = {
     }
 };
 
+// export Player Class module
 module.exports = Player;

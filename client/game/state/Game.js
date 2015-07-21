@@ -1,6 +1,14 @@
 /**
  * Created by Yunen on 26/05/15.
  */
+
+//MAP size
+var MAP_WIDTH = 1920;
+var MAP_HEIGHT = 1920;
+
+//Game variable
+var dots = [];
+
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
     this.game;      //  a reference to the currently running game (Phaser.Game)
@@ -28,17 +36,18 @@ BasicGame.Game.prototype = {
 
         this.game.stage.backgroundColor = '#71c5cf';
 
-        this.game.add.tileSprite(0, 0, 1920, 1920, 'background');
-        this.game.world.setBounds(0, 0, 1920, 1920);
+        this.game.add.tileSprite(0, 0, MAP_WIDTH, MAP_HEIGHT, 'background');
+        this.game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
         BasicGame.character = _.random(0, 8);
         BasicGame.player = new Player(null, this.rnd.integerInRange(0, 400), this.rnd.integerInRange(0, 400), BasicGame.character);
         BasicGame.player.scale.setTo(this.scaleRatio, this.scaleRatio);
         this.game.camera.follow(BasicGame.player);
 
-        //TODO:(Delete after test) test Dot.js
-        BasicGame.Food = new Dot(1, 100, 100);
-
+        //TODO: 我就玩玩而已，你也可以看看效果，酷炫
+        //for (i = 0; i < 100; i++) {
+        //    var newDot = new Dot(i, Math.floor(Math.random() * MAP_WIDTH), Math.floor(Math.random() * MAP_HEIGHT));
+        //}
 
         BasicGame.remotePlayers = [];
 
@@ -77,13 +86,18 @@ BasicGame.Game.prototype = {
 
         // Player removed message received
         socket.on("remove player", this.onRemovePlayer);
+
+        // TODO:(Not tested) New Dot created message received
+        socket.on("new dot", this.onNewDot);
+
+        // TODO:(Not tested) Dot removed message received
+        socket.on("remove dot", this.onRemoveDot);
     },
 
     onSocketConnected: function() {
         console.log("Connected to socket server");
 
         // Send local player data to the game server
-        //TODO: (Delete after check) ADD by Geyang 13 Jul
         socket.emit("new player", {x: BasicGame.player.x, y: BasicGame.player.y, character: BasicGame.character, mass: BasicGame.mass, point: BasicGame.point});
     },
 
@@ -149,5 +163,30 @@ BasicGame.Game.prototype = {
 
         // Remove player from array
         BasicGame.remotePlayers.splice(BasicGame.remotePlayers.indexOf(removePlayer), 1);
+    },
+
+    onNewDot: function(data) {
+        var newDot = new Dot(data.id, data.x, data.y);
+        //为之后删除做准备，但数组不一定是最好的结构，待定
+        dots.push(newDot);
+    },
+
+    onRemoveDot: function(data) {
+        // Find dot in array
+        var index = _.findIndex(dots, {
+            id : data.id
+        });
+
+        var removeDot = dots[index];
+
+        // Player not found
+        if (!removeDot) {
+            console.log("Dot not found: "+ data.id);
+            return;
+        }
+
+        removeDot.remove();
+
+        dots.splice(dots.indexOf(removeDot), 1);
     }
 };

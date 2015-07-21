@@ -21,7 +21,7 @@ var Dot = function(id, x, y) {
 };
 
 Dot.prototype.generateCircle = function(color) {
-    var bitmapSize = 8;
+    var bitmapSize = 20;
     var circle = game.add.bitmapData(bitmapSize, bitmapSize);
     circle.ctx.fillStyle = color;
     circle.ctx.beginPath();
@@ -35,7 +35,7 @@ Dot.prototype.generateCircle = function(color) {
  *  generate a color from the list for the Dot
  */
 Dot.prototype.generateColor = function() {
-    var colors = ['#234F3','#FF0000','#00FF00'];
+    var colors = ['#ade2d4', '#b0e1e4', '#b3d4e5', '#b6c8e7', '#babde9'];
     return colors[Math.floor(Math.random()*colors.length)];
 };
 
