@@ -21,6 +21,7 @@ var Dot = require("./entities/Dot");
 var players = null;
 var dots = null;
 var dotCounter = 0;
+var MAX_DOTS = 200;
 
 // Broadcast updates every 100 ms
 var updateInterval = 100;
@@ -42,6 +43,10 @@ function init() {
     players = [];
     dots = [];
     setEventHandlers();
+    // TODO:Generate one dot per second
+    // BUG: 目前单线程会block io的接入，具体原因未知
+    // 但在 104.236.190.114:8000上面测的时候好像又成功了
+    setInterval(onNewDot, 1000);
 }
 
 // Event handlers
@@ -147,19 +152,24 @@ function onClientDisconnect() {
  */
 function onNewDot() {
 
-    var x = Math.floor(Math.random() * MAP_WIDTH);
-    var y = Math.floor(Math.random() * MAP_HEIGHT);
+    // Keep generating until full
+    if (dots.length < MAX_DOTS) {
 
-    var newDot = new Dot(dotCounter++, x, y);
+        var x = Math.floor(Math.random() * MAP_WIDTH);
+        var y = Math.floor(Math.random() * MAP_HEIGHT);
 
-    //然后存到dots里
-    dots.push(newDot);
+        var newDot = new Dot(dotCounter++, x, y);
 
-    // 然后broadcast TODO:这句有问题
-    //this.broadcast.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
-    io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
+        //然后存到dots里
+        dots.push(newDot);
 
-    //TODO: implement on client side "new dot"
+        console.log("New Dot created! ID: "+newDot.getID());
+
+        // 然后broadcast TODO:这句有问题
+        //this.broadcast.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
+        io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
+
+    }
 }
 
 /**
@@ -188,8 +198,22 @@ function onRemoveDot(data) {
 }
 
 /**
- * TODO:
+ * TODO: by mengchen @ 21 July not finished
  */
 function calculateGameLogic() {
-
+    var i, j;
+    for(i = 0;i < players.length; i++) {
+        for(j = 0;j < dots.length; j++) {
+            var playerx = player[i].getX();
+            var playery = player[i].getY();
+            var playermass = player[i].getMass();
+            var dotx = dot[j].getX();
+            var doty = dot[j].getY();
+            var distance = Math.sqrt((playerx - dotx) * (playerx - dotx) + (playery - doty) * (playery - doty));
+            var radius = Math.sqrt(playermass);
+            if(distance <= radius) {
+                this.broadcast.emit("remove dot", {id: dot[j].getID()});
+            }
+        }
+    }
 }
