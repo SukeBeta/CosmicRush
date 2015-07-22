@@ -45,6 +45,12 @@ BasicGame.Game.prototype = {
         this.player.scale.setTo(this.scaleRatio, this.scaleRatio);
         this.game.camera.follow(self.player);
 
+        // Scoretext TODO: how to fix score text position on screen
+        var style = { font: "30px Arial", fill: "#ffffff" };
+        this.scoretext =  this.game.add.text(80, 40, "", style);
+        this.scoretext.anchor.setTo(0.5, 0.5);
+        this.scoretext.setText(0);
+
 
         // Groups
         this.remotePlayers = [];

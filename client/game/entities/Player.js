@@ -2,7 +2,7 @@
  * Created by Yunen on 26/05/15.
  */
 var DEFAULT_PLAYER_SPEED = 180;
-var MASS_SPEED_CONSTANT = 3000;
+var MASS_SPEED_CONSTANT = 300;
 
 var Player = function(id, x, y, character){
     this.id = id;
@@ -18,7 +18,8 @@ var Player = function(id, x, y, character){
      * radius^2 ~ mass
      */
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
-    this.radius = Math.sqrt(this.mass);
+    this.radius = Math.sqrt(this.mass) / 3;
+    this.scale = this.radius;
 
     // point: accumulated score
     this.point = 0;
@@ -57,6 +58,8 @@ var Player = function(id, x, y, character){
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds=true;
     game.add.existing(this);
+    // TODO: fix score text to screen?
+    // this.addChild(ground.scoretext);
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -73,6 +76,9 @@ Player.prototype.updateMass = function(mass) {
     this.mass = mass;
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     // TODO: scale sprite
+    this.radius = Math.sqrt(this.mass) / 3;
+    this.scale.x = this.radius;
+    this.scale.y = this.radius;
 };
 
 /**
@@ -81,6 +87,7 @@ Player.prototype.updateMass = function(mass) {
  */
 Player.prototype.addPoint = function(point) {
     this.point += point;
+    ground.scoretext.setText("Point: "+ this.point);
 };
 
 Player.prototype.handleMovement = function() {
@@ -96,16 +103,16 @@ Player.prototype.handleMovement = function() {
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
         this.body.velocity.y = 0;
-        this.body.velocity.x = -this.speed;
+        this.body.velocity.x = - DEFAULT_PLAYER_SPEED * this.speed_factor;
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
         this.body.velocity.y = 0;
-        this.body.velocity.x = this.speed;
+        this.body.velocity.x = DEFAULT_PLAYER_SPEED * this.speed_factor;
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
         this.body.velocity.x = 0;
-        this.body.velocity.y = -this.speed;
+        this.body.velocity.y = - DEFAULT_PLAYER_SPEED * this.speed_factor;
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
         this.body.velocity.x = 0;
-        this.body.velocity.y = this.speed;
+        this.body.velocity.y = DEFAULT_PLAYER_SPEED * this.speed_factor;
     }
 
     // Gyro control
