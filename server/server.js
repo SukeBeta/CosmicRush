@@ -169,7 +169,7 @@ function generateNewDot() {
 
             dots.push(newDot);
 
-            console.log("New Dot created: " + newDot.getID());
+            //console.log("New Dot created: " + newDot.getID());
 
             io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
         }

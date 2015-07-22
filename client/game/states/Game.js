@@ -145,6 +145,9 @@ BasicGame.Game.prototype = {
         // Update player position
         movePlayer.x = data.x;
         movePlayer.y = data.y;
+
+        // Update player mass
+        movePlayer.updateMass(data.mass);
     },
 
     onRemovePlayer: function(data) {

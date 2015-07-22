@@ -19,7 +19,7 @@ var Player = function(id, x, y, character){
      */
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass) / 3;
-    this.scale = this.radius;
+
 
     // point: accumulated score
     this.point = 0;
@@ -57,6 +57,8 @@ var Player = function(id, x, y, character){
     Phaser.Sprite.call(this, game, x, y, this.image);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds=true;
+    this.scale.x = this.radius;
+    this.scale.y = this.radius;
     game.add.existing(this);
     // TODO: fix score text to screen?
     // this.addChild(ground.scoretext);
@@ -75,7 +77,6 @@ Player.prototype.handleInput = function() {
 Player.prototype.updateMass = function(mass) {
     this.mass = mass;
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
-    // TODO: scale sprite
     this.radius = Math.sqrt(this.mass) / 3;
     this.scale.x = this.radius;
     this.scale.y = this.radius;

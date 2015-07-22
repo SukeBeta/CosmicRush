@@ -15,12 +15,11 @@ var RemotePlayer = function(id, x, y, character, mass, point){
     this.speed = DEFAULT_PLAYER_SPEED;
     this.lastPosition = { x: x, y: y };
     this.image = "";
-    
-    //TODO: (Delete after check) ADD by Geyang 13 Jul
+
     this.mass = mass;
     this.point = point;
-    this.speed_factor = MASS_SPEED_CONSTANT/this.mass;
-    this.radius = Math.sqrt(this.mass);
+    this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
+    this.radius = Math.sqrt(this.mass) / 3;
 
     switch (character) {
         case 0:
@@ -54,11 +53,21 @@ var RemotePlayer = function(id, x, y, character, mass, point){
 
     Phaser.Sprite.call(this, game, x, y, this.image);
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.body.collideWorldBounds=true;
+    this.body.collideWorldBounds = true;
+    this.scale.x = this.radius;
+    this.scale.y = this.radius;
     game.add.existing(this);
 };
 
 RemotePlayer.prototype = Object.create(Phaser.Sprite.prototype);
+
+RemotePlayer.prototype.updateMass = function(mass) {
+    this.mass = mass;
+    this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
+    this.radius = Math.sqrt(this.mass) / 3;
+    this.scale.x = this.radius;
+    this.scale.y = this.radius;
+};
 
 // Useless !
 // This method will be deleted. Yunen
