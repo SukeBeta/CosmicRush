@@ -42,11 +42,10 @@ init();
 function init() {
     players = [];
     dots = [];
+
     setEventHandlers();
-    // TODO:Generate one dot per second
-    // BUG: 目前单线程会block io的接入，具体原因未知
-    // 但在 104.236.190.114:8000上面测的时候好像又成功了
-    setInterval(onNewDot, 1000);
+    // Namespaces
+    generateNewDot();
 }
 
 // Event handlers
@@ -68,7 +67,8 @@ function onSocketConnection(socket) {
     // Listen for move player message
     socket.on("move player", onMovePlayer);
 
-    // TODO:如何设置定期broadcast?比如新食物？
+    // Listen for remove dot message
+    socket.on("remove dot", onRemoveDot);
 }
 
 function onNewPlayer(data) {
@@ -90,6 +90,13 @@ function onNewPlayer(data) {
     // Add new player to the players array
     players.push(newPlayer);
 
+    // Dots
+    // Send existing dots to the new player
+    var i, existingDot;
+    for (i = 0; i < dots.length; i++) {
+        existingDot = dots[i];
+        this.emit("new dot", {id: existingDot.getID(), x: existingDot.getX(), y: existingDot.getY()});
+    }
 }
 
 function onMovePlayer(data) {
@@ -150,26 +157,23 @@ function onClientDisconnect() {
 /**
  * TODO:Generate a new dot on map
  */
-function onNewDot() {
+function generateNewDot() {
+    setInterval(function () {
+        // Keep generating until full
+        if (dots.length < MAX_DOTS) {
 
-    // Keep generating until full
-    if (dots.length < MAX_DOTS) {
+            var x = Math.floor(Math.random() * MAP_WIDTH);
+            var y = Math.floor(Math.random() * MAP_HEIGHT);
 
-        var x = Math.floor(Math.random() * MAP_WIDTH);
-        var y = Math.floor(Math.random() * MAP_HEIGHT);
+            var newDot = new Dot(dotCounter++, x, y);
 
-        var newDot = new Dot(dotCounter++, x, y);
+            dots.push(newDot);
 
-        //然后存到dots里
-        dots.push(newDot);
+            console.log("New Dot created: " + newDot.getID());
 
-        console.log("New Dot created! ID: "+newDot.getID());
-
-        // 然后broadcast TODO:这句有问题
-        //this.broadcast.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
-        io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
-
-    }
+            io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
+        }
+    }, 1000);
 }
 
 /**

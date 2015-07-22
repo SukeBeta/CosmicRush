@@ -1,29 +1,19 @@
 /**
  * Created by Hosuke and Mengchen on 19/07/15.
+ * Modified by Yunen 22/07/2015
+ * This class is to draw a new circle.
  */
 
-/**
- * Create a food particle on map
- * @param id
- * @param x
- * @param y
- * @constructor
- */
-var Dot = function(id, x, y) {
-    this.id = id;
-    this.x = x;
-    this.y = y;
-    this.color = this.generateColor();
-    var circle = this.generateCircle(this.color);
-
-    // Create sprite on map
-    this.sprite = game.add.sprite(x,y,circle);
+var Dot = function() {
+    this.color = this.selectColor();
+    this.dot = this.generate();
+    return this.dot
 };
 
-Dot.prototype.generateCircle = function(color) {
-    var bitmapSize = 20;
+Dot.prototype.generate = function() {
+    var bitmapSize = 30;
     var circle = game.add.bitmapData(bitmapSize, bitmapSize);
-    circle.ctx.fillStyle = color;
+    circle.ctx.fillStyle = this.color;
     circle.ctx.beginPath();
     circle.ctx.arc(bitmapSize/2,bitmapSize/2,bitmapSize/2,0,Math.PI*2, true);
     circle.ctx.closePath();
@@ -34,7 +24,7 @@ Dot.prototype.generateCircle = function(color) {
 /**
  *  generate a color from the list for the Dot
  */
-Dot.prototype.generateColor = function() {
+Dot.prototype.selectColor = function() {
     var colors = ['#ade2d4', '#b0e1e4', '#b3d4e5', '#b6c8e7', '#babde9'];
     return colors[Math.floor(Math.random()*colors.length)];
 };

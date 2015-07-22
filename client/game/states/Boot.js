@@ -6,6 +6,7 @@ var BasicGame = {};
 BasicGame.Boot = function (game) {
     var player = null,
         remotePlayers = null,
+        dots = null,
         character = null;
 };
 

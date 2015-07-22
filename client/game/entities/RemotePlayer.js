@@ -60,6 +60,8 @@ var RemotePlayer = function(id, x, y, character, mass, point){
 
 RemotePlayer.prototype = Object.create(Phaser.Sprite.prototype);
 
+// Useless !
+// This method will be deleted. Yunen
 RemotePlayer.prototype.update = function() {
     if(this.body.x != this.lastPosition.x || this.body.y != this.lastPosition.y) {
 

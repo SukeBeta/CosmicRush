@@ -2,7 +2,7 @@
  * Created by Yunen on 26/05/15.
  */
 var DEFAULT_PLAYER_SPEED = 180;
-var MASS_SPEED_CONSTANT = 5000000000;
+var MASS_SPEED_CONSTANT = 3000;
 
 var Player = function(id, x, y, character){
     this.id = id;
@@ -14,11 +14,10 @@ var Player = function(id, x, y, character){
 
     /**
      * speed_factor concept:
-     * speed_factor * mass = constant
+     * speed_factor * sqrt(mass) = constant
      * radius^2 ~ mass
-     * TODO:speed_factor should determine speed_limit or responsiveness?
      */
-    this.speed_factor = MASS_SPEED_CONSTANT/this.mass;
+    this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass);
 
     // point: accumulated score
@@ -66,8 +65,34 @@ Player.prototype.handleInput = function() {
     this.handleMovement();
 };
 
+/**
+ * Update player's mass and recalculate its speed_factor
+ * @param mass
+ */
+Player.prototype.updateMass = function(mass) {
+    this.mass = mass;
+    this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
+    // TODO: scale sprite
+};
+
+/**
+ * Add some points to player's point
+ * @param point
+ */
+Player.prototype.addPoint = function(point) {
+    this.point += point;
+};
+
 Player.prototype.handleMovement = function() {
     var self = this;
+
+    // Collisions
+    game.physics.arcade.overlap(this, ground.dots, eatingDot, null, this);
+
+    for (var i = 0; i < ground.remotePlayers.length; i++) {
+        remotePlayer = ground.remotePlayers[i];
+        game.physics.arcade.collide(this, remotePlayer, colliding, null, this);
+    }
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
         this.body.velocity.y = 0;
@@ -95,6 +120,26 @@ Player.prototype.handleMovement = function() {
     });
 
     // Send move player message
-    //TODO: (Delete after check) ADD by Geyang 13 Jul
     socket.emit("move player", {id: this.id, x: this.position.x, y: this.position.y, mass: this.mass, point: this.point});
+
+    // collisionHandler
+    // collide with a dot
+    function eatingDot(player, dot) {
+        //kill dot
+        dot.kill();
+
+        // Update player information
+        player.updateMass(player.mass + 1);
+        player.addPoint(1);
+
+        // Send remove dot message
+        socket.emit("remove dot", {id: dot.id});
+
+        // dot will be destroyed when server broadcast back
+    }
+
+    // collide with a remotePlayer
+    function colliding(player, remotePlayer) {
+        //:ToDo
+    }
 };
