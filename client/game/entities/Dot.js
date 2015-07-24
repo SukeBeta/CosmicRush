@@ -4,11 +4,17 @@
  * This class is to draw a new circle.
  */
 
+/**
+ * Dot Constructor, may have a id attribute assigned outside
+ * @returns {*}
+ * @constructor
+ */
 var Dot = function() {
     this.color = this.selectColor();
     this.dot = this.generate();
-    return this.dot
+    return this.dot;
 };
+
 
 Dot.prototype.generate = function() {
     var bitmapSize = 30;

@@ -40,8 +40,8 @@ BasicGame.Game.prototype = {
         this.game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
         // Player
-        this.character = _.random(0, 8);
-        this.player = new Player(null, this.rnd.integerInRange(0, 400), this.rnd.integerInRange(0, 400), self.character);
+        this.character = _.random(0, 2);
+        this.player = new Player(null, this.rnd.integerInRange(0, 800), this.rnd.integerInRange(0, 800), self.character);
         this.player.scale.setTo(this.scaleRatio, this.scaleRatio);
         this.game.camera.follow(self.player);
 
@@ -90,10 +90,13 @@ BasicGame.Game.prototype = {
         // Player removed message received
         socket.on("remove player", this.onRemovePlayer);
 
-        // TODO:(Not tested) New Dot created message received
+        // TODO:(Not tested) Update player message received
+        socket.on("update player", this.onUpdatePlayer);
+
+        // New Dot created message received
         socket.on("new dot", this.onNewDot);
 
-        // TODO:(Not tested) Dot removed message received
+        // Dot removed message received
         socket.on("remove dot", this.onRemoveDot);
     },
 
@@ -170,8 +173,13 @@ BasicGame.Game.prototype = {
         self.remotePlayers.splice(self.remotePlayers.indexOf(removePlayer), 1);
     },
 
+    onUpdatePlayer: function(data) {
+        self.player.updateMass(data.mass);
+        self.player.setPoint(data.point);
+    },
+
     onNewDot: function(data) {
-        console.log("New dot generated: " + data.id);
+        //console.log("New dot generated: " + data.id);
 
         // Add A Dot To Group
         var circle = new Dot();

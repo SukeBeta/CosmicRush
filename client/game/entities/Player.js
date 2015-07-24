@@ -4,6 +4,17 @@
 var DEFAULT_PLAYER_SPEED = 180;
 var MASS_SPEED_CONSTANT = 300;
 
+// for keyboard debug
+keyboard = false;
+
+/**
+ * Player Constructor
+ * @param id
+ * @param x
+ * @param y
+ * @param character
+ * @constructor
+ */
 var Player = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
@@ -19,7 +30,6 @@ var Player = function(id, x, y, character){
      */
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass) / 3;
-
 
     // point: accumulated score
     this.point = 0;
@@ -91,6 +101,20 @@ Player.prototype.addPoint = function(point) {
     ground.scoretext.setText("Point: "+ this.point);
 };
 
+
+/**
+ * Set player's point
+ * @param point
+ */
+Player.prototype.setPoint = function(point) {
+    this.point = point;
+    ground.scoretext.setText("Point: "+ this.point);
+};
+
+/**
+ * Player movement event handler
+ * handling inputs from keyboard or gyro
+ */
 Player.prototype.handleMovement = function() {
     var self = this;
 
@@ -103,29 +127,35 @@ Player.prototype.handleMovement = function() {
     }
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+        this.pressed = true;
         this.body.velocity.y = 0;
-        this.body.velocity.x = - DEFAULT_PLAYER_SPEED * this.speed_factor;
+        this.body.velocity.x = - DEFAULT_PLAYER_SPEED;
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+        this.pressed = true;
         this.body.velocity.y = 0;
-        this.body.velocity.x = DEFAULT_PLAYER_SPEED * this.speed_factor;
+        this.body.velocity.x = DEFAULT_PLAYER_SPEED;
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+        this.pressed = true;
         this.body.velocity.x = 0;
-        this.body.velocity.y = - DEFAULT_PLAYER_SPEED * this.speed_factor;
+        this.body.velocity.y = - DEFAULT_PLAYER_SPEED;
     } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+        this.pressed = true;
         this.body.velocity.x = 0;
-        this.body.velocity.y = DEFAULT_PLAYER_SPEED * this.speed_factor;
+        this.body.velocity.y = DEFAULT_PLAYER_SPEED;
     }
 
-    // Gyro control
-    // setting gyroscope update frequency
-    gyro.frequency = 20;
-    // start gyroscope detection
-    gyro.startTracking(function(o) {
-        // updating player velocity
-        // Modify speed_factor for better control
-        self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
-        self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
-    });
+    if (!keyboard) {
+        // Gyro control
+        // setting gyroscope update frequency
+        gyro.frequency = 20;
+        // start gyroscope detection
+        gyro.startTracking(function(o) {
+            // updating player velocity
+            // Modify speed_factor for better control
+            self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
+            self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
+        });
+    }
 
     // Send move player message
     socket.emit("move player", {id: this.id, x: this.position.x, y: this.position.y, mass: this.mass, point: this.point});

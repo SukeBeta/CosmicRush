@@ -92,7 +92,7 @@ function onNewPlayer(data) {
 
     // Dots
     // Send existing dots to the new player
-    var i, existingDot;
+    var existingDot;
     for (i = 0; i < dots.length; i++) {
         existingDot = dots[i];
         this.emit("new dot", {id: existingDot.getID(), x: existingDot.getX(), y: existingDot.getY()});
@@ -123,7 +123,7 @@ function onMovePlayer(data) {
     movePlayer.setPoint(data.point);
 
     //TODO:计算吃，游戏逻辑加在这里
-    //calculateGameLogic();
+    calculateGameLogic(movePlayer);
 
     // Broadcast updated position to connected socket clients
     // console.log("Player moves to: ", movePlayer.getX() + " " , movePlayer.getY());
@@ -202,22 +202,50 @@ function onRemoveDot(data) {
 }
 
 /**
- * TODO: by mengchen @ 21 July not finished
+ * Calculating player eating/be eaten process
  */
-function calculateGameLogic() {
-    var i, j;
-    for(i = 0;i < players.length; i++) {
-        for(j = 0;j < dots.length; j++) {
-            var playerx = player[i].getX();
-            var playery = player[i].getY();
-            var playermass = player[i].getMass();
-            var dotx = dot[j].getX();
-            var doty = dot[j].getY();
-            var distance = Math.sqrt((playerx - dotx) * (playerx - dotx) + (playery - doty) * (playery - doty));
-            var radius = Math.sqrt(playermass);
-            if(distance <= radius) {
-                this.broadcast.emit("remove dot", {id: dot[j].getID()});
+function calculateGameLogic(player) {
+    for(var i = 0; i < players.length; i++) {
+        if (players[i].getID() != player.getID() && players[i].getCharacter() != player.getCharacter()) {
+            var distanceX = player.getX() - players[i].getX();
+            var distanceY = player.getY() - players[i].getY();
+            var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+            // TODO: formula to be determined
+            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 8;
+
+            if (distance < safeDistance) {
+                var eater = null,
+                    eaten = null;
+                // player eats players[i]
+                if ( (player.getCharacter() + 1) % 3 === players[i].getCharacter()) {
+                    eater = player;
+                    eaten = players[i];
+
+                    eater.setMass( eater.getMass() + eaten.getMass()/2 );
+                    eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
+                    eaten.setMass( eaten.getMass()/2 );
+
+                    // TODO: send message back to player to update mass and score
+                    io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
+                    io.to(eaten.getID()).emit("update player", {mass: eaten.getMass(), point: eaten.getPoint()});
+
+                }
+
+                // players[i] eats player
+                if ( (players[i].getCharacter() + 1) % 3 === player.getCharacter()) {
+                    eater = players[i];
+                    eaten = player;
+
+                    eater.setMass( eater.getMass() + eaten.getMass()/2 );
+                    eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
+                    eaten.setMass( eaten.getMass()/2 );
+
+                    // TODO: send message back to player to update mass and score
+                    io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
+                    io.to(eaten.getID()).emit("update player", {mass: eaten.getMass(), point: eaten.getPoint()});
+                }
             }
+
         }
     }
 }
