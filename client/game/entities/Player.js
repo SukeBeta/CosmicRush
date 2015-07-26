@@ -121,10 +121,10 @@ Player.prototype.handleMovement = function() {
     // Collisions
     game.physics.arcade.overlap(this, ground.dots, eatingDot, null, this);
 
-    for (var i = 0; i < ground.remotePlayers.length; i++) {
-        remotePlayer = ground.remotePlayers[i];
-        game.physics.arcade.collide(this, remotePlayer, colliding, null, this);
-    }
+    //for (var i = 0; i < ground.remotePlayers.length; i++) {
+    //    remotePlayer = ground.remotePlayers[i];
+    //    game.physics.arcade.collide(this, remotePlayer, colliding, null, this);
+    //}
 
     if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
         this.pressed = true;
