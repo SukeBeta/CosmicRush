@@ -42,7 +42,8 @@ BasicGame.Game.prototype = {
         // Player
         this.character = _.random(0, 2);
         this.player = new Player(null, this.rnd.integerInRange(0, 800), this.rnd.integerInRange(0, 800), self.character);
-        this.player.scale.setTo(this.scaleRatio, this.scaleRatio);
+        this.player.scale.setTo(this.radius, this.radius);
+        this.player.anchor.setTo(0.5, 0.5);
         this.game.camera.follow(self.player);
 
         // Scoretext TODO: how to fix score text position on screen
@@ -126,7 +127,7 @@ BasicGame.Game.prototype = {
 
         var newPlayer = new RemotePlayer(data.id, data.x, data.y, data.character, data.mass, data.point);
         newPlayer.scale.setTo(self.scaleRatio, self.scaleRatio);
-
+        newPlayer.anchor.setTo(0.5, 0.5);
         self.remotePlayers.push(newPlayer);
     },
 
