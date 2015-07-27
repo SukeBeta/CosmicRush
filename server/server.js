@@ -220,6 +220,7 @@ function calculateGameLogic(player) {
                 if ( (player.getCharacter() + 1) % 3 === players[i].getCharacter()) {
                     eater = player;
                     eaten = players[i];
+                    console.log("Player ID: " + eater.getID() + " eats Player ID: " + eaten.getID() + " for " + Math.floor(eaten.getMass()/2) + "points");
 
                     eater.setMass( eater.getMass() + eaten.getMass()/2 );
                     eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
@@ -235,6 +236,7 @@ function calculateGameLogic(player) {
                 if ( (players[i].getCharacter() + 1) % 3 === player.getCharacter()) {
                     eater = players[i];
                     eaten = player;
+                    console.log("Player ID: " + eater.getID() + " eats Player ID: " + eaten.getID() + " for " + Math.floor(eaten.getMass()/2) + "points");
 
                     eater.setMass( eater.getMass() + eaten.getMass()/2 );
                     eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
