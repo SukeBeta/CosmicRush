@@ -3,8 +3,8 @@
  */
 
 //MAP size
-var MAP_WIDTH = 1920;
-var MAP_HEIGHT = 1920;
+var MAP_WIDTH = 10000;
+var MAP_HEIGHT = 10000;
 
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
@@ -36,11 +36,11 @@ BasicGame.Game.prototype = {
 
         // Background starfield
         this.stars = this.game.add.group();
-        for (var i=0; i<100; i++) {
+        for (var i=0; i<500; i++) {
             var circle = new Star();
             var star = self.game.add.sprite(_.random(-32, MAP_WIDTH), _.random(0, MAP_HEIGHT), circle);
             game.physics.enable(star, Phaser.Physics.ARCADE);
-            star.body.velocity.x = _.random(0, 100);
+            star.body.velocity.x = _.random(1, 130);
             this.stars.add(star);
         }
 
@@ -52,7 +52,7 @@ BasicGame.Game.prototype = {
 
         // Player
         this.character = _.random(0, 2);
-        this.player = new Player(null, this.rnd.integerInRange(0, 800), this.rnd.integerInRange(0, 800), self.character);
+        this.player = new Player(null, this.rnd.integerInRange(50, MAP_WIDTH-50), this.rnd.integerInRange(50, MAP_HEIGHT-50), self.character);
         this.player.scale.setTo(this.radius, this.radius);
         this.player.anchor.setTo(0.5, 0.5);
         this.game.camera.follow(self.player);
@@ -197,6 +197,7 @@ BasicGame.Game.prototype = {
     onUpdatePlayer: function(data) {
         self.player.updateMass(data.mass);
         self.player.setPoint(data.point);
+        socket.emit("unfreeze player", {id: self.player.id});
     },
 
     onNewDot: function(data) {

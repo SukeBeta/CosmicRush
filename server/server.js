@@ -27,8 +27,8 @@ var MAX_DOTS = 200;
 var updateInterval = 100;
 
 // Map size
-var MAP_WIDTH = 1920;
-var MAP_HEIGHT = 1920;
+var MAP_WIDTH = 10000;
+var MAP_HEIGHT = 10000;
 
 // Set up Node http server
 app.use(express.static("../client"));
@@ -69,6 +69,9 @@ function onSocketConnection(socket) {
 
     // Listen for remove dot message
     socket.on("remove dot", onRemoveDot);
+
+    // TODO: (NOT TESTED) unfreeze player
+    socket.on("unfreeze player", onUnfreezePlayer);
 }
 
 function onNewPlayer(data) {
@@ -117,7 +120,6 @@ function onMovePlayer(data) {
     movePlayer.setX(data.x);
     movePlayer.setY(data.y);
 
-    //TODO: (Delete after check) ADD by Geyang 13 Jul
     // Update player mass and point
     movePlayer.setMass(data.mass);
     movePlayer.setPoint(data.point);
@@ -126,8 +128,6 @@ function onMovePlayer(data) {
     calculateGameLogic(movePlayer);
 
     // Broadcast updated position to connected socket clients
-    // console.log("Player moves to: ", movePlayer.getX() + " " , movePlayer.getY());
-    //TODO: (Delete after check) ADD by Geyang 13 Jul
     this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), mass: movePlayer.getMass(), point: movePlayer.getPoint()});
 }
 
@@ -155,7 +155,7 @@ function onClientDisconnect() {
 }
 
 /**
- * TODO:Generate a new dot on map
+ * Generate a new dot on map
  */
 function generateNewDot() {
     setInterval(function () {
@@ -177,7 +177,7 @@ function generateNewDot() {
 }
 
 /**
- * TODO: Remove a dot from map
+ * TODO: Remove a dot from map (Not fully working)
  * Usually called by the game logic
  */
 function onRemoveDot(data) {
@@ -202,7 +202,24 @@ function onRemoveDot(data) {
 }
 
 /**
+ *
+ * @param data
+ */
+function onUnfreezePlayer(data) {
+    // Find player in array
+    var index = _.findIndex(players, {
+        id : data.id
+    });
+
+    var frozenPlayer = players[index];
+    frozenPlayer.eatable = true;
+
+    console.log("Player has been unfrozen: "+ data.id);
+}
+
+/**
  * Calculating player eating/be eaten process
+ * @param player
  */
 function calculateGameLogic(player) {
     for(var i = 0; i < players.length; i++) {
@@ -217,10 +234,11 @@ function calculateGameLogic(player) {
                 var eater = null,
                     eaten = null;
                 // player eats players[i]
-                if ( (player.getCharacter() + 1) % 3 === players[i].getCharacter()) {
+                if ( (player.getCharacter() + 1) % 3 === players[i].getCharacter() && players[i].eatable) {
                     eater = player;
                     eaten = players[i];
-                    console.log("Player ID: " + eater.getID() + " eats Player ID: " + eaten.getID() + " for " + Math.floor(eaten.getMass()/2) + "points");
+                    eaten.eatable = false;
+                    console.log("Player ID: " + eater.getID() + " eats Player ID: " + eaten.getID() + " for " + Math.floor(eaten.getMass()/2) + " points");
 
                     eater.setMass( eater.getMass() + eaten.getMass()/2 );
                     eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
@@ -233,10 +251,11 @@ function calculateGameLogic(player) {
                 }
 
                 // players[i] eats player
-                if ( (players[i].getCharacter() + 1) % 3 === player.getCharacter()) {
+                if ( (players[i].getCharacter() + 1) % 3 === player.getCharacter() && player.eatable) {
                     eater = players[i];
                     eaten = player;
-                    console.log("Player ID: " + eater.getID() + " eats Player ID: " + eaten.getID() + " for " + Math.floor(eaten.getMass()/2) + "points");
+                    eaten.eatable = false;
+                    console.log("Player ID: " + eater.getID() + " eats Player ID: " + eaten.getID() + " for " + Math.floor(eaten.getMass()/2) + " points");
 
                     eater.setMass( eater.getMass() + eaten.getMass()/2 );
                     eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));

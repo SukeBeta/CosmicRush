@@ -20,6 +20,8 @@ var Player = function(id, x, y, character, mass, point) {
     this.character = character;
     this.mass = mass;
     this.point = point;
+    // freeze player after eaten for a while to avoid repeated calculation
+    this.eatable = true;
 };
 
 /**
