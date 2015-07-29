@@ -34,9 +34,20 @@ BasicGame.Game.prototype = {
         // A Reference to objects on the map
         ground = this;
 
+        // Background starfield
+        this.stars = this.game.add.group();
+        for (var i=0; i<100; i++) {
+            var circle = new Star();
+            var star = self.game.add.sprite(_.random(-32, MAP_WIDTH), _.random(0, MAP_HEIGHT), circle);
+            game.physics.enable(star, Phaser.Physics.ARCADE);
+            star.body.velocity.x = _.random(0, 100);
+            this.stars.add(star);
+        }
+
         // Game Environment
-        this.game.stage.backgroundColor = '#71c5cf';
-        this.game.add.tileSprite(0, 0, MAP_WIDTH, MAP_HEIGHT, 'background');
+        //this.game.stage.backgroundColor = '#71c5cf';
+        this.game.stage.backgroundColor = '#160b20';
+        //this.game.add.tileSprite(0, 0, MAP_WIDTH, MAP_HEIGHT, 'background');
         this.game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
         // Player
@@ -65,7 +76,16 @@ BasicGame.Game.prototype = {
     },
 
     update: function () {
+        self.updateStarfield();
         self.player.handleMovement(this.dots);
+    },
+
+    updateStarfield: function() {
+        self.stars.forEach(function(star) {
+            if (star.body.x > MAP_WIDTH) {
+                star.body.x = -32;
+            }
+        },self.stars);
     },
 
     render: function() {
