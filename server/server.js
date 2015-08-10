@@ -21,7 +21,7 @@ var Dot = require("./entities/Dot");
 var players = null;
 var dots = null;
 var dotCounter = 0;
-var MAX_DOTS = 200;
+var MAX_DOTS = 1000;
 
 // Broadcast updates every 100 ms
 var updateInterval = 100;

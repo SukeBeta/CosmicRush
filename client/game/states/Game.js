@@ -3,8 +3,8 @@
  */
 
 //MAP size
-var MAP_WIDTH = 10000;
-var MAP_HEIGHT = 10000;
+var MAP_WIDTH = 5000;
+var MAP_HEIGHT = 5000;
 
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
@@ -45,9 +45,7 @@ BasicGame.Game.prototype = {
         }
 
         // Game Environment
-        //this.game.stage.backgroundColor = '#71c5cf';
         this.game.stage.backgroundColor = '#160b20';
-        //this.game.add.tileSprite(0, 0, MAP_WIDTH, MAP_HEIGHT, 'background');
         this.game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
         // Player
@@ -57,12 +55,12 @@ BasicGame.Game.prototype = {
         this.player.anchor.setTo(0.5, 0.5);
         this.game.camera.follow(self.player);
 
-        // Scoretext TODO: how to fix score text position on screen
-        var style = { font: "30px Arial", fill: "#ffffff" };
+        // Scoretext
+        var style = { font: "40px Arial", fill: "#ffffff" };
         this.scoretext =  this.game.add.text(80, 40, "", style);
         this.scoretext.anchor.setTo(0.5, 0.5);
         this.scoretext.setText(0);
-
+        this.scoretext.fixedToCamera = 1;
 
         // Groups
         this.remotePlayers = [];
@@ -94,10 +92,10 @@ BasicGame.Game.prototype = {
 
     setEventHandlers: function() {
         // Socket connection successful
-        socket.on("connect", this.onSocketConnected());
+        socket.on("connect", this.onSocketConnected);
 
         // Socket disconnection
-        socket.on("disconnect", this.onSocketDisconnect());
+        socket.on("disconnect", this.onSocketDisconnect);
 
         // New ID message received
         socket.on("assign an ID", this.onIDReceived);

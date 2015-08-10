@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <title></title>
 
-    <script src="//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js"></script>
-    <script src="game/vendor/gyro.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="game/libs/phaser.min.js"></script>
+    <script src="game/libs/gyro.min.js"></script>
+    <script src="game/libs/illuminated.min.js"></script>
+    <script src="game/libs/underscore-min.js"></script>
 
     <style>
         body {
@@ -18,43 +19,41 @@
 </head>
 <body>
 
-    <div id="gameContainer"></div>
+<div id="gameContainer"></div>
 
-    <script src="/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 
-    <script src="game/entities/Player.js"></script>
-    <script src="game/entities/RemotePlayer.js"></script>
+<script src="game/entities/Player.js"></script>
+<script src="game/entities/RemotePlayer.js"></script>
 
-    <script src="game/entities/Dot.js"></script>
-    <script src="game/entities/Star.js"></script>
-
-
-    <script src="game/states/Boot.js"></script>
-    <script src="game/states/Preloader.js"></script>
-    <script src="game/states/Game.js"></script>
+<script src="game/entities/Dot.js"></script>
+<script src="game/entities/Star.js"></script>
 
 
+<script src="game/states/Boot.js"></script>
+<script src="game/states/Preloader.js"></script>
+<script src="game/states/Game.js"></script>
 
-    <script>
-        // Global variables
-        window.game = new Phaser.Game("100%", "100%", Phaser.AUTO, 'gameContainer');
 
-        // TODO: change the localhost to server IP address
-        // window.socket = io.connect('http://localhost:8000');
-        window.socket = io.connect('http://130.56.74.79:8000/');
+<script>
+    // Global variables
+    window.game = new Phaser.Game("100%", "100%", Phaser.AUTO, 'gameContainer');
 
-        window.scaleRatio = window.devicePixelRatio/2;
+    // TODO: change the localhost to server IP address
+    // window.socket = io.connect('http://localhost:8000');
+    window.socket = io.connect('http://192.168.2.3:8000/');
+    window.scaleRatio = window.devicePixelRatio/3;
 
-        startGame();
+    startGame();
 
-        function startGame() {
+    function startGame() {
 
-            game.state.add('Boot', BasicGame.Boot);
-            game.state.add('Preloader', BasicGame.Preloader);
-            game.state.add('Game', BasicGame.Game);
+        game.state.add('Boot', BasicGame.Boot);
+        game.state.add('Preloader', BasicGame.Preloader);
+        game.state.add('Game', BasicGame.Game);
 
-            game.state.start('Boot');
-        }
-    </script>
+        game.state.start('Boot');
+    }
+</script>
 </body>
 </html>

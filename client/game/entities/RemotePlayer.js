@@ -21,37 +21,34 @@ var RemotePlayer = function(id, x, y, character, mass, point){
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass) / 3;
 
-    switch (character) {
+    var bitmapSize = 50;
+    var circle = game.make.bitmapData(bitmapSize, bitmapSize);
+
+    switch(character) {
+        // corresponding to p01.png, p02.png, p03.png
         case 0:
-            this.image = "p01";
+            circle.ctx.fillStyle = 'rgba(220,50,50, 0.9)';
+            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            circle.ctx.shadowColor = "rgba(255,100,100,0.9)";
             break;
         case 1:
-            this.image = "p02";
+            circle.ctx.fillStyle = 'rgba(190,220,90, 0.9)';
+            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            circle.ctx.shadowColor = 'rgba(220,240,150,0.9)';
             break;
         case 2:
-            this.image = "p03";
-            break;
-        case 3:
-            this.image = "p04";
-            break;
-        case 4:
-            this.image = "p05";
-            break;
-        case 5:
-            this.image = "p06";
-            break;
-        case 6:
-            this.image = "p07";
-            break;
-        case 7:
-            this.image = "p08";
-            break;
-        case 8:
-            this.image = "p09";
+            circle.ctx.fillStyle = 'rgba(0,200,220, 0.9)';
+            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            circle.ctx.shadowColor = 'rgba(0,240,255,0.9)';
             break;
     }
 
-    Phaser.Sprite.call(this, game, x, y, this.image);
+    circle.ctx.beginPath();
+    circle.ctx.arc(bitmapSize/2,bitmapSize/2,bitmapSize/2,0,Math.PI*2, true);
+    circle.ctx.closePath();
+    circle.ctx.fill();
+
+    Phaser.Sprite.call(this, game, x, y, circle);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds = true;
     this.scale.x = this.radius;

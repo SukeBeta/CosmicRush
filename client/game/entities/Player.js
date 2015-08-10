@@ -4,9 +4,6 @@
 var DEFAULT_PLAYER_SPEED = 180;
 var MASS_SPEED_CONSTANT = 300;
 
-// for keyboard debug
-keyboard = false;
-
 /**
  * Player Constructor
  * @param id
@@ -18,7 +15,6 @@ keyboard = false;
 var Player = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
-    this.image = "";
 
     // mass: player quits when mass < 5
     this.mass = 10;
@@ -34,44 +30,38 @@ var Player = function(id, x, y, character){
     // point: accumulated score
     this.point = 0;
 
-    switch (character) {
+    var bitmapSize = 50;
+    var circle = game.make.bitmapData(bitmapSize, bitmapSize);
+
+    switch(character) {
         case 0:
-            this.image = "p01";
+            circle.ctx.fillStyle = 'rgba(220,50,50, 0.9)';
+            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            circle.ctx.shadowColor = "rgba(255,100,100,0.9)";
             break;
         case 1:
-            this.image = "p02";
+            circle.ctx.fillStyle = 'rgba(190,220,90, 0.9)';
+            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            circle.ctx.shadowColor = 'rgba(220,240,150,0.9)';
             break;
         case 2:
-            this.image = "p03";
-            break;
-        case 3:
-            this.image = "p04";
-            break;
-        case 4:
-            this.image = "p05";
-            break;
-        case 5:
-            this.image = "p06";
-            break;
-        case 6:
-            this.image = "p07";
-            break;
-        case 7:
-            this.image = "p08";
-            break;
-        case 8:
-            this.image = "p09";
+            circle.ctx.fillStyle = 'rgba(0,200,220, 0.9)';
+            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+            circle.ctx.shadowColor = 'rgba(0,240,255,0.9)';
             break;
     }
 
-    Phaser.Sprite.call(this, game, x, y, this.image);
+    circle.ctx.beginPath();
+    circle.ctx.arc(bitmapSize/2,bitmapSize/2,bitmapSize/2,0,Math.PI*2, true);
+    circle.ctx.closePath();
+    circle.ctx.fill();
+
+    Phaser.Sprite.call(this, game, x, y, circle);
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds=true;
     this.scale.x = this.radius;
     this.scale.y = this.radius;
     game.add.existing(this);
-    // TODO: fix score text to screen?
-    // this.addChild(ground.scoretext);
 };
 
 Player.prototype = Object.create(Phaser.Sprite.prototype);
@@ -121,41 +111,16 @@ Player.prototype.handleMovement = function() {
     // Collisions
     game.physics.arcade.overlap(this, ground.dots, eatingDot, null, this);
 
-    //for (var i = 0; i < ground.remotePlayers.length; i++) {
-    //    remotePlayer = ground.remotePlayers[i];
-    //    game.physics.arcade.collide(this, remotePlayer, colliding, null, this);
-    //}
-
-    if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
-        this.pressed = true;
-        this.body.velocity.y = 0;
-        this.body.velocity.x = - DEFAULT_PLAYER_SPEED;
-    } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
-        this.pressed = true;
-        this.body.velocity.y = 0;
-        this.body.velocity.x = DEFAULT_PLAYER_SPEED;
-    } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
-        this.pressed = true;
-        this.body.velocity.x = 0;
-        this.body.velocity.y = - DEFAULT_PLAYER_SPEED;
-    } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-        this.pressed = true;
-        this.body.velocity.x = 0;
-        this.body.velocity.y = DEFAULT_PLAYER_SPEED;
-    }
-
-    if (!keyboard) {
-        // Gyro control
-        // setting gyroscope update frequency
-        gyro.frequency = 20;
-        // start gyroscope detection
-        gyro.startTracking(function(o) {
-            // updating player velocity
-            // Modify speed_factor for better control
-            self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
-            self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
-        });
-    }
+    // Gyro control
+    // setting gyroscope update frequency
+    gyro.frequency = 20;
+    // start gyroscope detection
+    gyro.startTracking(function(o) {
+        // updating player velocity
+        // Modify speed_factor for better control
+        self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
+        self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
+    });
 
     // Send move player message
     socket.emit("move player", {id: this.id, x: this.position.x, y: this.position.y, mass: this.mass, point: this.point});
@@ -174,10 +139,5 @@ Player.prototype.handleMovement = function() {
         socket.emit("remove dot", {id: dot.id});
 
         // dot will be destroyed when server broadcast back
-    }
-
-    // collide with a remotePlayer
-    function colliding(player, remotePlayer) {
-        //:ToDo
     }
 };
