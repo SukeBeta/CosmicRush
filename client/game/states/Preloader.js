@@ -8,6 +8,9 @@ BasicGame.Preloader = function (game) {
 BasicGame.Preloader.prototype = {
 
     preload: function () {
+        this.game.load.image('p01', 'game/assets/p01.png');
+        this.game.load.image('p02', 'game/assets/p02.png');
+        this.game.load.image('p03', 'game/assets/p03.png');
     },
 
     create: function () {

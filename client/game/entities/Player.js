@@ -15,6 +15,7 @@ var MASS_SPEED_CONSTANT = 300;
 var Player = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
+    this.image = null;
 
     // mass: player quits when mass < 5
     this.mass = 10;
@@ -34,6 +35,16 @@ var Player = function(id, x, y, character){
     var circle = game.make.bitmapData(bitmapSize, bitmapSize);
 
     switch(character) {
+        // corresponding to p01.png, p02.png, p03.png
+        //case 0:
+        //    this.image = "p01";
+        //    break;
+        //case 1:
+        //    this.image = "p02";
+        //    break;
+        //case 2:
+        //    this.image = "p03";
+        //    break;
         case 0:
             circle.ctx.fillStyle = 'rgba(220,50,50, 0.9)';
             circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
@@ -56,7 +67,12 @@ var Player = function(id, x, y, character){
     circle.ctx.closePath();
     circle.ctx.fill();
 
-    Phaser.Sprite.call(this, game, x, y, circle);
+    if (this.image) {
+        Phaser.Sprite.call(this, game, x, y, this.image);
+    } else {
+        Phaser.Sprite.call(this, game, x, y, circle);
+    }
+
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds=true;
     this.scale.x = this.radius;
@@ -92,19 +108,6 @@ Player.prototype.addPoint = function(point) {
 };
 
 
-/**
- * Set player's point
- * @param point
- */
-Player.prototype.setPoint = function(point) {
-    this.point = point;
-    ground.scoretext.setText("Point: "+ this.point);
-};
-
-/**
- * Player movement event handler
- * handling inputs from keyboard or gyro
- */
 Player.prototype.handleMovement = function() {
     var self = this;
 

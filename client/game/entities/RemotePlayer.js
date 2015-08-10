@@ -14,7 +14,7 @@ var RemotePlayer = function(id, x, y, character, mass, point){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
     this.lastPosition = { x: x, y: y };
-    this.image = "";
+    this.image = null;
 
     this.mass = mass;
     this.point = point;
@@ -26,6 +26,15 @@ var RemotePlayer = function(id, x, y, character, mass, point){
 
     switch(character) {
         // corresponding to p01.png, p02.png, p03.png
+        //case 0:
+        //    this.image = "p01";
+        //    break;
+        //case 1:
+        //    this.image = "p02";
+        //    break;
+        //case 2:
+        //    this.image = "p03";
+        //    break;
         case 0:
             circle.ctx.fillStyle = 'rgba(220,50,50, 0.9)';
             circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
@@ -48,7 +57,12 @@ var RemotePlayer = function(id, x, y, character, mass, point){
     circle.ctx.closePath();
     circle.ctx.fill();
 
-    Phaser.Sprite.call(this, game, x, y, circle);
+    if (this.image) {
+        Phaser.Sprite.call(this, game, x, y, this.image);
+    } else {
+        Phaser.Sprite.call(this, game, x, y, circle);
+    }
+
     game.physics.enable(this, Phaser.Physics.ARCADE);
     this.body.collideWorldBounds = true;
     this.scale.x = this.radius;

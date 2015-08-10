@@ -92,10 +92,10 @@ BasicGame.Game.prototype = {
 
     setEventHandlers: function() {
         // Socket connection successful
-        socket.on("connect", this.onSocketConnected);
+        socket.on("connect", this.onSocketConnected());
 
         // Socket disconnection
-        socket.on("disconnect", this.onSocketDisconnect);
+        socket.on("disconnect", this.onSocketDisconnect());
 
         // New ID message received
         socket.on("assign an ID", this.onIDReceived);
