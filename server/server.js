@@ -27,8 +27,8 @@ var MAX_DOTS = 1000;
 var updateInterval = 100;
 
 // Map size
-var MAP_WIDTH = 10000;
-var MAP_HEIGHT = 10000;
+var MAP_WIDTH = 5000;
+var MAP_HEIGHT = 5000;
 
 // Set up Node http server
 app.use(express.static("../client"));
