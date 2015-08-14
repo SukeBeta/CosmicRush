@@ -17,13 +17,54 @@ var Dot = function() {
 
 
 Dot.prototype.generate = function() {
-    var bitmapSize = 30;
+    var bitmapSize = 200;
     var circle = game.add.bitmapData(bitmapSize, bitmapSize);
-    circle.ctx.fillStyle = this.color;
-    circle.ctx.beginPath();
-    circle.ctx.arc(bitmapSize/2,bitmapSize/2,bitmapSize/2,0,Math.PI*2, true);
-    circle.ctx.closePath();
-    circle.ctx.fill();
+    //  star(canvas, x of center, y of center, radius, number of points, fraction of radius for inset)
+
+
+    function star(ctx, x, y, r, p, m)
+    {
+        ctx.save();
+        var gradientFill = ctx.createRadialGradient(bitmapSize/2, bitmapSize/2, 0, bitmapSize/2, bitmapSize/2, bitmapSize);
+        gradientFill.addColorStop(0,'rgba(255,253,0,0.5)');
+        gradientFill.addColorStop(1,'rgba(255,253,0,0)');
+        ctx.fillStyle = gradientFill;
+        ctx.beginPath();
+        ctx.translate(x, y);
+        ctx.moveTo(0,0-r);
+        for (var i = 0; i < p; i++)
+        {
+            ctx.rotate(Math.PI / p);
+            ctx.lineTo(0, 0 - (r*m));
+            ctx.rotate(Math.PI / p);
+            ctx.lineTo(0, 0 - r);
+        }
+        ctx.fill();
+        ctx.restore();
+    }
+
+    function star2(ctx, x, y, r, p, m)
+    {
+        ctx.save();
+        ctx.fillStyle = "rgba(255,255,167,0.5)";
+        ctx.beginPath();
+        ctx.translate(x, y);
+        ctx.moveTo(0,0-r);
+        for (var i = 0; i < p; i++)
+        {
+            ctx.rotate(Math.PI / p);
+            ctx.lineTo(0, 0 - (r*m));
+            ctx.rotate(Math.PI / p);
+            ctx.lineTo(0, 0 - r);
+        }
+        ctx.fill();
+        ctx.restore();
+    }
+
+    // star(canvas, x of center, y of center, radius, number of points, fraction of radius for inset)
+    star2(circle.ctx, 100, 100, 35, 5, 0.6);
+    star(circle.ctx, 100, 100, 40, 5, 0.6);
+
     return circle;
 };
 
@@ -38,6 +79,10 @@ Dot.prototype.selectColor = function() {
 /**
  * remove this dot from map
  */
-Dot.prototype.remove = function(){
+Dot.prototype.remove = function() {
     this.sprite.destroy();
+};
+
+Dot.prototype.light = function() {
+    this.sprite.tint = Math.random() * 0xffffff;
 };

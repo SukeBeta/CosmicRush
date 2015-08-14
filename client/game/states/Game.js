@@ -38,24 +38,26 @@ BasicGame.Game.prototype = {
         this.stars = this.game.add.group();
         for (var i=0; i<500; i++) {
             var circle = new Star();
-            var star = self.game.add.sprite(_.random(-32, MAP_WIDTH), _.random(0, MAP_HEIGHT), circle);
-            game.physics.enable(star, Phaser.Physics.ARCADE);
+            var star = this.game.add.sprite(_.random(-32, MAP_WIDTH), _.random(0, MAP_HEIGHT), circle);
+            this.game.physics.enable(star, Phaser.Physics.ARCADE);
             star.body.velocity.x = _.random(1, 130);
             this.stars.add(star);
         }
 
         // Game Environment
         this.game.stage.backgroundColor = '#160b20';
+        //this.game.stage.backgroundColor = '#ffffff';
+
         this.game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
         // Player
         this.character = _.random(0, 2);
         this.player = new Player(null, this.rnd.integerInRange(50, MAP_WIDTH-50), this.rnd.integerInRange(50, MAP_HEIGHT-50), self.character);
-        this.player.scale.setTo(this.radius, this.radius);
+        this.player.scale.setTo(this.player.radius, this.player.radius);
         this.player.anchor.setTo(0.5, 0.5);
-        this.game.camera.follow(self.player);
+        this.game.camera.follow(this.player);
 
-        // Scoretext
+        // Score Text
         var style = { font: "40px Arial", fill: "#ffffff" };
         this.scoretext =  this.game.add.text(80, 40, "", style);
         this.scoretext.anchor.setTo(0.5, 0.5);
@@ -64,6 +66,7 @@ BasicGame.Game.prototype = {
 
         // Groups
         this.remotePlayers = [];
+        //
         this.dots = this.game.add.group();
         this.dots.enableBody = true;
         this.dots.physicsBodyType = Phaser.Physics.ARCADE;
@@ -74,8 +77,15 @@ BasicGame.Game.prototype = {
     },
 
     update: function () {
-        self.updateStarfield();
-        self.player.handleMovement(this.dots);
+        this.updateStarfield();
+
+        this.dots.forEach(function(dot) {
+            dot.angle += 0.2;
+            dot.tint = this.rgba2hex(_.random(150, 255), _.random(180, 255), 0, 1);
+        }, this);
+
+        this.player.handleMovement(this.dots);
+        this.player.breathe();
     },
 
     updateStarfield: function() {
@@ -205,6 +215,7 @@ BasicGame.Game.prototype = {
         var circle = new Dot();
         var dot = self.game.add.sprite(data.x, data.y, circle);
         dot.scale.setTo(self.scaleRatio, self.scaleRatio);
+        dot.anchor.setTo(0.5, 0.5);
 
         // store id to dot
         dot.id = data.id;
@@ -232,7 +243,15 @@ BasicGame.Game.prototype = {
         }
     },
 
-    tweet: function(data) {
-        console.log(data);
+    // convert RGBA color data to hex
+    rgba2hex: function(r, g, b, a) {
+        if (r > 255 || g > 255 || b > 255 || a > 255)
+            throw "Invalid color component";
+        return "0x" + (256 + r).toString(16).substr(1) +((1 << 24) + (g << 16) | (b << 8) | a).toString(16).substr(1);
+    },
+
+    // random real number in range {min, max}, including min but excluding max
+    randomReal: function(xmin, xmax) {
+        return Math.random() * (xmax - xmin) + xmin;
     }
 };
