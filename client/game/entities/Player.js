@@ -94,7 +94,7 @@ Player.prototype.updateMass = function(mass) {
  */
 Player.prototype.addPoint = function(point) {
     this.point += point;
-    ground.scoretext.setText("Point: "+ this.point);
+    ground.scoretext.setText("Score : " + this.point);
 };
 
 
@@ -104,7 +104,7 @@ Player.prototype.addPoint = function(point) {
  */
 Player.prototype.setPoint = function(point) {
     this.point = point;
-    ground.scoretext.setText("Point: "+ this.point);
+    ground.scoretext.setText("Score : " + this.point);
 };
 
 // Breath

@@ -61,8 +61,14 @@ BasicGame.Game.prototype = {
         var style = { font: "40px Arial", fill: "#ffffff" };
         this.scoretext =  this.game.add.text(80, 40, "", style);
         this.scoretext.anchor.setTo(0.5, 0.5);
-        this.scoretext.setText(0);
+        this.scoretext.setText("Score : " + 0);
         this.scoretext.fixedToCamera = 1;
+
+        // Player Number text
+        this.playertext = this.game.add.text(80, 100, "", style);
+        this.playertext.anchor.setTo(0.5, 0.5);
+        this.playertext.setText("Player: " + 1);
+        this.playertext.fixedToCamera = 1;
 
         // Groups
         this.remotePlayers = [];
@@ -157,6 +163,7 @@ BasicGame.Game.prototype = {
         newPlayer.scale.setTo(self.scaleRatio, self.scaleRatio);
         newPlayer.anchor.setTo(0.5, 0.5);
         self.remotePlayers.push(newPlayer);
+        ground.playertext.setText("Player: " + (self.remotePlayers.length+1) );
     },
 
     // One player is moving
@@ -200,6 +207,7 @@ BasicGame.Game.prototype = {
 
         // Remove player from array
         self.remotePlayers.splice(self.remotePlayers.indexOf(removePlayer), 1);
+        ground.playertext.setText("Player: " + (self.remotePlayers.length+1) );
     },
 
     onUpdatePlayer: function(data) {
