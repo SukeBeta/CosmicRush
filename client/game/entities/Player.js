@@ -15,8 +15,6 @@ var MASS_SPEED_CONSTANT = 300;
 var Player = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
-    // breath counting
-    this.counter = 1;
     // mass: player quits when mass < 5
     this.mass = 10;
 
@@ -27,6 +25,8 @@ var Player = function(id, x, y, character){
      */
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass) / 3;
+    // breath counting
+    this.counter = this.radius;
 
     // point: accumulated score
     this.point = 0;
@@ -94,7 +94,7 @@ Player.prototype.updateMass = function(mass) {
  */
 Player.prototype.addPoint = function(point) {
     this.point += point;
-    ground.scoretext.setText("Score : " + this.point);
+    ground.scoretext.setText("Point: "+ this.point);
 };
 
 
@@ -104,7 +104,7 @@ Player.prototype.addPoint = function(point) {
  */
 Player.prototype.setPoint = function(point) {
     this.point = point;
-    ground.scoretext.setText("Score : " + this.point);
+    ground.scoretext.setText("Point: "+ this.point);
 };
 
 // Breath
@@ -117,10 +117,10 @@ Player.prototype.breathe = function() {
         this.counter -= 0.01;
     }
 
-    if (this.counter > 1.3) {
+    if (this.counter > (this.radius + this.radius * 0.3)) {
         this.growing = false;
     }
-    else if (this.counter < 1) {
+    else if (this.counter < this.radius) {
         this.growing = true;
     }
 

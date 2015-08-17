@@ -13,58 +13,56 @@ var MASS_SPEED_CONSTANT = 100;
 var RemotePlayer = function(id, x, y, character, mass, point){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
-    this.lastPosition = { x: x, y: y };
-    this.image = null;
+    // mass: player quits when mass < 5
+    this.mass = 10;
 
-    this.mass = mass;
-    this.point = point;
+    /**
+     * speed_factor concept:
+     * speed_factor * sqrt(mass) = constant
+     * radius^2 ~ mass
+     */
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass) / 3;
+    // breath counting
+    this.counter = this.radius;
 
-    var bitmapSize = 50;
-    var circle = game.make.bitmapData(bitmapSize, bitmapSize);
+    // point: accumulated score
+    this.point = 0;
+
+    var playerInfo = {
+        bitmapSize: 50,
+        smallCircleSize: 20,
+        bigCircleSize: 25
+    };
+    this.circle = game.make.bitmapData(playerInfo.bitmapSize, playerInfo.bitmapSize);
+    this.circle.addToWorld();
+
+    // create gradientFill, gradientFill's coordinate used position of the circle
+    var gradientFill = this.circle.context.createRadialGradient(playerInfo.bitmapSize/2, playerInfo.bitmapSize/2, 0, playerInfo.bitmapSize/2, playerInfo.bitmapSize/2, playerInfo.bitmapSize);
 
     switch(character) {
-        // corresponding to p01.png, p02.png, p03.png
-        //case 0:
-        //    this.image = "p01";
-        //    break;
-        //case 1:
-        //    this.image = "p02";
-        //    break;
-        //case 2:
-        //    this.image = "p03";
-        //    break;
         case 0:
-            circle.ctx.fillStyle = 'rgba(220,50,50, 0.9)';
-            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-            circle.ctx.shadowColor = "rgba(255,100,100,0.9)";
+            gradientFill.addColorStop(0,'rgba(0,200,250,0.5)');
+            gradientFill.addColorStop(1,'rgba(0,200,250,0)');
             break;
         case 1:
-            circle.ctx.fillStyle = 'rgba(190,220,90, 0.9)';
-            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-            circle.ctx.shadowColor = 'rgba(220,240,150,0.9)';
+            gradientFill.addColorStop(0,'rgba(255,0,3,0.5)');
+            gradientFill.addColorStop(1,'rgba(255,0,3,0)');
             break;
         case 2:
-            circle.ctx.fillStyle = 'rgba(0,200,220, 0.9)';
-            circle.ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-            circle.ctx.shadowColor = 'rgba(0,240,255,0.9)';
+            gradientFill.addColorStop(0,'rgba(5,205,0,0.5)');
+            gradientFill.addColorStop(1,'rgba(5,205,0,0)');
             break;
     }
 
-    circle.ctx.beginPath();
-    circle.ctx.arc(bitmapSize/2,bitmapSize/2,bitmapSize/2,0,Math.PI*2, true);
-    circle.ctx.closePath();
-    circle.ctx.fill();
+    // create inner circle
+    this.circle.circle(playerInfo.bitmapSize/2, playerInfo.bitmapSize/2, playerInfo.smallCircleSize, 'rgba(255,255,255,0.75)');
+    // create outer circle
+    this.circle.circle(playerInfo.bitmapSize/2, playerInfo.bitmapSize/2, playerInfo.bigCircleSize, gradientFill);
 
-    if (this.image) {
-        Phaser.Sprite.call(this, game, x, y, this.image);
-    } else {
-        Phaser.Sprite.call(this, game, x, y, circle);
-    }
-
+    Phaser.Sprite.call(this, game, x, y, this.circle);
     game.physics.enable(this, Phaser.Physics.ARCADE);
-    this.body.collideWorldBounds = true;
+    this.body.collideWorldBounds=true;
     this.scale.x = this.radius;
     this.scale.y = this.radius;
     game.add.existing(this);
@@ -80,17 +78,23 @@ RemotePlayer.prototype.updateMass = function(mass) {
     this.scale.y = this.radius;
 };
 
-// Useless !
-// This method will be deleted. Yunen
-RemotePlayer.prototype.update = function() {
-    if(this.body.x != this.lastPosition.x || this.body.y != this.lastPosition.y) {
-
-    } else {
-
+// Breath
+RemotePlayer.prototype.breathe = function() {
+    if (this.growing) {
+        this.counter += 0.01;
+    }
+    else {
+        this.counter -= 0.01;
     }
 
-    this.lastPosition.x = this.body.x;
-    this.lastPosition.y = this.body.y;
+    if (this.counter > (this.radius + this.radius * 0.3)) {
+        this.growing = false;
+    }
+    else if (this.counter < this.radius) {
+        this.growing = true;
+    }
+
+    this.scale.setTo(this.counter, this.counter);
 };
 
 RemotePlayer.prototype.freeze = function() {

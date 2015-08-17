@@ -35,14 +35,15 @@ BasicGame.Game.prototype = {
         ground = this;
 
         // Background starfield
-        this.stars = this.game.add.group();
-        for (var i=0; i<500; i++) {
-            var circle = new Star();
-            var star = this.game.add.sprite(_.random(-32, MAP_WIDTH), _.random(0, MAP_HEIGHT), circle);
-            this.game.physics.enable(star, Phaser.Physics.ARCADE);
-            star.body.velocity.x = _.random(1, 130);
-            this.stars.add(star);
-        }
+        // TODO: Low performance
+        //this.stars = this.game.add.group();
+        //for (var i=0; i< 200; i++) {
+        //    var circle = new Star();
+        //    var star = this.game.add.sprite(_.random(-32, MAP_WIDTH), _.random(0, MAP_HEIGHT), circle);
+        //    this.game.physics.enable(star, Phaser.Physics.ARCADE);
+        //    star.body.velocity.x = _.random(1, 130);
+        //    this.stars.add(star);
+        //}
 
         // Game Environment
         this.game.stage.backgroundColor = '#160b20';
@@ -58,17 +59,20 @@ BasicGame.Game.prototype = {
         this.game.camera.follow(this.player);
 
         // Score Text
-        var style = { font: "40px Arial", fill: "#ffffff" };
-        this.scoretext =  this.game.add.text(80, 40, "", style);
-        this.scoretext.anchor.setTo(0.5, 0.5);
+        var style = {font: "40px Arial", fill: "#ffffff"};
+        this.scoretext =  this.game.add.text(10, 10, "", style);
         this.scoretext.setText("Score : " + 0);
         this.scoretext.fixedToCamera = 1;
 
         // Player Number text
-        this.playertext = this.game.add.text(80, 100, "", style);
-        this.playertext.anchor.setTo(0.5, 0.5);
+        this.playertext = this.game.add.text(10, 60, "", style);
         this.playertext.setText("Player: " + 1);
         this.playertext.fixedToCamera = 1;
+
+        // Location Text
+        this.locationText = this.game.add.text(this.game.width - 230, 10, "", style);
+        this.locationText.setText("(" + Math.floor(this.player.x) + "," + Math.floor(this.player.y) + ")");
+        this.locationText.fixedToCamera = 1;
 
         // Groups
         this.remotePlayers = [];
@@ -83,13 +87,19 @@ BasicGame.Game.prototype = {
     },
 
     update: function () {
-        this.updateStarfield();
+        // TODO: Low performance
+        //this.updateStarfield();
 
         this.dots.forEach(function(dot) {
-            dot.angle += 0.2;
-            dot.tint = this.rgba2hex(_.random(150, 255), _.random(180, 255), 0, 1);
+            dot.angle += 1;
+            //dot.tint = this.rgba2hex(_.random(150, 255), _.random(180, 255), 0, 1);
         }, this);
 
+        this.remotePlayers.forEach(function(remotePlayer) {
+            remotePlayer.breathe();
+        }, this);
+
+        this.locationText.setText("(" + Math.floor(this.player.x) + "," + Math.floor(this.player.y) + ")");
         this.player.handleMovement(this.dots);
         this.player.breathe();
     },
@@ -160,10 +170,10 @@ BasicGame.Game.prototype = {
         console.log("New player connected: "+ data.id);
 
         var newPlayer = new RemotePlayer(data.id, data.x, data.y, data.character, data.mass, data.point);
-        newPlayer.scale.setTo(self.scaleRatio, self.scaleRatio);
+        newPlayer.scale.setTo(newPlayer.radius, newPlayer.radius);
         newPlayer.anchor.setTo(0.5, 0.5);
         self.remotePlayers.push(newPlayer);
-        ground.playertext.setText("Player: " + (self.remotePlayers.length+1) );
+        ground.playertext.setText("Player: " + (self.remotePlayers.length+1));
     },
 
     // One player is moving
