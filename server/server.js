@@ -124,7 +124,7 @@ function onMovePlayer(data) {
     movePlayer.setMass(data.mass);
     movePlayer.setPoint(data.point);
 
-    //TODO:计算吃，游戏逻辑加在这里
+    //TODO: Calculating eating between players
     calculateGameLogic(movePlayer);
 
     // Broadcast updated position to connected socket clients
@@ -219,22 +219,23 @@ function onUnfreezePlayer(data) {
 
 /**
  * Calculating player eating/be eaten process
+ * Update @17 AUG : eating only depends on mass
  * @param player
  */
 function calculateGameLogic(player) {
     for(var i = 0; i < players.length; i++) {
-        if (players[i].getID() != player.getID() && players[i].getCharacter() != player.getCharacter()) {
+        if (players[i].getID() != player.getID()) {
             var distanceX = player.getX() - players[i].getX();
             var distanceY = player.getY() - players[i].getY();
             var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             // TODO: formula to be determined
-            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 8;
+            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 7;
 
             if (distance < safeDistance) {
                 var eater = null,
                     eaten = null;
                 // player eats players[i]
-                if ( (player.getCharacter() + 1) % 3 === players[i].getCharacter() && players[i].eatable) {
+                if ( player.getMass() > (players[i].getMass() + 1) && players[i].eatable) {
                     eater = player;
                     eaten = players[i];
                     eaten.eatable = false;
@@ -251,7 +252,7 @@ function calculateGameLogic(player) {
                 }
 
                 // players[i] eats player
-                if ( (players[i].getCharacter() + 1) % 3 === player.getCharacter() && player.eatable) {
+                if ( players[i].getMass() > (player.getMass() + 1) && player.eatable) {
                     eater = players[i];
                     eaten = player;
                     eaten.eatable = false;

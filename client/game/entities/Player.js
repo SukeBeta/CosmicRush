@@ -16,7 +16,7 @@ var Player = function(id, x, y, character){
     this.id = id;
     this.speed = DEFAULT_PLAYER_SPEED;
     // mass: player quits when mass < 5
-    this.mass = 10;
+    this.mass = 20;
 
     /**
      * speed_factor concept:
@@ -82,6 +82,7 @@ Player.prototype.handleInput = function() {
  */
 Player.prototype.updateMass = function(mass) {
     this.mass = mass;
+    ground.masstext.setText("Mass   : "+ Math.floor(this.mass * 10) / 10);
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
     this.radius = Math.sqrt(this.mass) / 3;
     this.scale.x = this.radius;
@@ -94,7 +95,7 @@ Player.prototype.updateMass = function(mass) {
  */
 Player.prototype.addPoint = function(point) {
     this.point += point;
-    ground.scoretext.setText("Point: "+ this.point);
+    ground.scoretext.setText("Score  : "+ this.point);
 };
 
 
@@ -104,7 +105,7 @@ Player.prototype.addPoint = function(point) {
  */
 Player.prototype.setPoint = function(point) {
     this.point = point;
-    ground.scoretext.setText("Point: "+ this.point);
+    ground.scoretext.setText("Score  : "+ this.point);
 };
 
 // Breath
@@ -147,6 +148,11 @@ Player.prototype.handleMovement = function() {
         self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
         self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
     });
+
+    // Player lost mass during movement
+    if (this.mass > 30) {
+        this.updateMass(this.mass - self.body.speed / 200000 * (this.mass / 20));
+    }
 
     // Send move player message
     socket.emit("move player", {id: this.id, x: this.position.x, y: this.position.y, mass: this.mass, point: this.point});

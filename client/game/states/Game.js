@@ -61,12 +61,17 @@ BasicGame.Game.prototype = {
         // Score Text
         var style = {font: "40px Arial", fill: "#ffffff"};
         this.scoretext =  this.game.add.text(10, 10, "", style);
-        this.scoretext.setText("Score : " + 0);
+        this.scoretext.setText("Score  : " + 0);
         this.scoretext.fixedToCamera = 1;
 
+        // Mass Text
+        this.masstext = this.game.add.text(10, 60, "", style);
+        this.masstext.setText("Mass   : " + 20);
+        this.masstext.fixedToCamera = 1;
+
         // Player Number text
-        this.playertext = this.game.add.text(10, 60, "", style);
-        this.playertext.setText("Player: " + 1);
+        this.playertext = this.game.add.text(10, 110, "", style);
+        this.playertext.setText("Player : " + 1);
         this.playertext.fixedToCamera = 1;
 
         // Location Text
@@ -173,7 +178,7 @@ BasicGame.Game.prototype = {
         newPlayer.scale.setTo(newPlayer.radius, newPlayer.radius);
         newPlayer.anchor.setTo(0.5, 0.5);
         self.remotePlayers.push(newPlayer);
-        ground.playertext.setText("Player: " + (self.remotePlayers.length+1));
+        ground.playertext.setText("Player : " + (self.remotePlayers.length+1));
     },
 
     // One player is moving
@@ -217,7 +222,7 @@ BasicGame.Game.prototype = {
 
         // Remove player from array
         self.remotePlayers.splice(self.remotePlayers.indexOf(removePlayer), 1);
-        ground.playertext.setText("Player: " + (self.remotePlayers.length+1) );
+        ground.playertext.setText("Player : " + (self.remotePlayers.length+1) );
     },
 
     onUpdatePlayer: function(data) {
