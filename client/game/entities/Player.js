@@ -151,7 +151,7 @@ Player.prototype.handleMovement = function() {
 
     // Player lost mass during movement
     if (this.mass > 30) {
-        this.updateMass(this.mass - self.body.speed / 200000 * (this.mass / 20));
+        this.updateMass(this.mass - self.body.speed / 200000 * (this.mass * this.mass * this.mass / 10000) );
     }
 
     // Send move player message
