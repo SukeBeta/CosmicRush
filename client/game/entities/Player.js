@@ -138,16 +138,37 @@ Player.prototype.handleMovement = function() {
     // Collisions
     game.physics.arcade.overlap(this, ground.dots, eatingDot, null, this);
 
-    // Gyro control
-    // setting gyroscope update frequency
-    gyro.frequency = 20;
-    // start gyroscope detection
-    gyro.startTracking(function(o) {
-        // updating player velocity
-        // Modify speed_factor for better control
-        self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma/Math.abs(o.gamma)) * 7;
-        self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta/Math.abs(o.beta)) * 7;
-    });
+    if (game.device.desktop) {
+        console.log("Mousing!");
+        console.log(game.input.mousePointer.x);
+        // Mouse Control
+        // By Mengchen
+        var x = game.input.mousePointer.x + game.camera.x - self.x;
+        var y = game.input.mousePointer.y + game.camera.y - self.y;
+
+        if(!game.math.fuzzyEqual(x, 0, 8)) {
+            self.body.velocity.x = self.speed_factor * x / Math.sqrt(x * x + y * y) * 30;
+        } else {
+            self.body.velocity.x = 0;
+        }
+
+        if(!game.math.fuzzyEqual(y, 0, 8)) {
+            self.body.velocity.y = self.speed_factor * y / Math.sqrt(x * x + y * y) * 30;
+        } else {
+            self.body.velocity.y = 0;
+        }
+    } else {
+        // Gyro control
+        // setting gyroscope update frequency
+        gyro.frequency = 20;
+        // start gyroscope detection
+        gyro.startTracking(function (o) {
+            // updating player velocity
+            // Modify speed_factor for better control
+            self.body.velocity.x = self.body.velocity.x / 10 + Math.sqrt(Math.abs(o.gamma)) * self.speed_factor * (o.gamma / Math.abs(o.gamma)) * 7;
+            self.body.velocity.y = self.body.velocity.y / 10 + Math.sqrt(Math.abs(o.beta)) * self.speed_factor * (o.beta / Math.abs(o.beta)) * 7;
+        });
+    }
 
     // Player lost mass during movement
     if (this.mass > 30) {
