@@ -139,8 +139,6 @@ Player.prototype.handleMovement = function() {
     game.physics.arcade.overlap(this, ground.dots, eatingDot, null, this);
 
     if (game.device.desktop) {
-        console.log("Mousing!");
-        console.log(game.input.mousePointer.x);
         // Mouse Control
         // By Mengchen
         var x = game.input.mousePointer.x + game.camera.x - self.x;

@@ -3,8 +3,8 @@
  */
 
 //MAP size
-var MAP_WIDTH = 5000;
-var MAP_HEIGHT = 5000;
+var MAP_WIDTH = 3000;
+var MAP_HEIGHT = 3000;
 
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
@@ -96,7 +96,17 @@ BasicGame.Game.prototype = {
         //this.updateStarfield();
 
         this.dots.forEach(function(dot) {
-            dot.angle += 1;
+            // TODO: (not tested) Hide dot if not near the player
+            //if (Math.abs(dot.x-self.player.x) > 500 || Math.abs(dot.y-self.player.y) > 500) {
+            //    dot.kill();
+            //}
+            // TODO: (not tested) Revive dot if near the player
+            //if (Math.abs(dot.x-self.player.x) < 500 && Math.abs(dot.y-self.player.y) < 500 && dot.alive === false) {
+            //    dot.revive();
+            //}
+
+            // dot.angle += 1;
+
             //dot.tint = this.rgba2hex(_.random(150, 255), _.random(180, 255), 0, 1);
         }, this);
 
@@ -239,6 +249,11 @@ BasicGame.Game.prototype = {
         var dot = self.game.add.sprite(data.x, data.y, circle);
         dot.scale.setTo(self.scaleRatio, self.scaleRatio);
         dot.anchor.setTo(0.5, 0.5);
+
+        // TODO: (not tested) Hide dots if not near the player
+        //if (Math.abs(data.x-self.player.x) > 500 || Math.abs(data.y-self.player.y) > 500) {
+        //    dot.kill();
+        //}
 
         // store id to dot
         dot.id = data.id;

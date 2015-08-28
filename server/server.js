@@ -21,14 +21,14 @@ var Dot = require("./entities/Dot");
 var players = null;
 var dots = null;
 var dotCounter = 0;
-var MAX_DOTS = 1000;
+var MAX_DOTS = 300;
 
 // Broadcast updates every 100 ms
 var updateInterval = 100;
 
 // Map size
-var MAP_WIDTH = 5000;
-var MAP_HEIGHT = 5000;
+var MAP_WIDTH = 3000;
+var MAP_HEIGHT = 3000;
 
 // Set up Node http server
 app.use(express.static("../client"));
