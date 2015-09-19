@@ -43,6 +43,8 @@ function init() {
     players = [];
     dots = [];
 
+    console.log("COSMIC RUSH server starts!");
+
     setEventHandlers();
     // Namespaces
     generateNewDot();
@@ -139,16 +141,18 @@ function onClientDisconnect() {
         id : this.id
     });
 
-    var removePlayer = players[index];
+    var removedPlayer = players[index];
 
     // Player not found
-    if (!removePlayer) {
+    if (!removedPlayer) {
         console.log("Player not found: "+this.id);
+        // Remove the player even it is not found
+        this.broadcast.emit("remove player", {id: this.id});
         return;
     }
 
     // Remove player from players array
-    players.splice(players.indexOf(removePlayer), 1);
+    players.splice(players.indexOf(removedPlayer), 1);
 
     // Broadcast removed player to connected socket clients
     this.broadcast.emit("remove player", {id: this.id});
@@ -225,9 +229,12 @@ function onUnfreezePlayer(data) {
     });
 
     var frozenPlayer = players[index];
-    frozenPlayer.eatable = true;
-
-    console.log("Player has been unfrozen: "+ data.id);
+    if (!frozenPlayer) {
+        console.log("Player does not exist for unfrozen: " + data.id);
+    } else {
+        frozenPlayer.eatable = true;
+        console.log("Player has been unfrozen: " + data.id);
+    }
 }
 
 /**
@@ -262,6 +269,11 @@ function calculateGameLogic(player) {
                     io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
                     io.to(eaten.getID()).emit("update player", {mass: eaten.getMass(), point: eaten.getPoint()});
 
+                    // Remove eaten if its mass < 5
+                    if (eaten.getMass() < 5) {
+                        removePlayer(eaten);
+                    }
+
                 }
 
                 // players[i] eats player
@@ -278,9 +290,37 @@ function calculateGameLogic(player) {
                     // TODO: send message back to player to update mass and score
                     io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
                     io.to(eaten.getID()).emit("update player", {mass: eaten.getMass(), point: eaten.getPoint()});
+
+                    // Remove eaten if its mass < 5
+                    if (eaten.getMass() < 5) {
+                        removePlayer(eaten);
+                    }
                 }
             }
 
         }
     }
+}
+
+
+function removePlayer(player) {
+    // Find player in array
+    var index = _.findIndex(players, {
+        id : player.getID()
+    });
+
+    var removedPlayer = players[index];
+
+    // Player not found
+    if (!removedPlayer) {
+        console.log("Player not found: "+this.id);
+    } else {
+        // Remove player from players array
+        players.splice(players.indexOf(removedPlayer), 1);
+    }
+
+    io.to(player.getID()).emit("disconnect", {});
+
+    // Broadcast removed player to connected socket clients
+    io.emit("remove player", {id: this.id});
 }
