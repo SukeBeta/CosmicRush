@@ -136,7 +136,10 @@ BasicGame.Game.prototype = {
         socket.on("connect", this.onSocketConnected());
 
         // Socket disconnection
-        socket.on("disconnect", this.onSocketDisconnect());
+        socket.on("disconnect", this.onSocketDisconnect);
+
+        // Game Over
+        socket.on("game over", this.onGameOver);
 
         // New ID message received
         socket.on("assign an ID", this.onIDReceived);
@@ -170,6 +173,19 @@ BasicGame.Game.prototype = {
     // Socket disconnected
     onSocketDisconnect: function() {
         console.log("Disconnected from socket server");
+        socket.disconnect();
+
+        // TODO: Load menu or gameover state
+        self.state.start('Menu');
+    },
+
+    // Game over
+    onGameOver: function() {
+        console.log("Game over by server");
+        socket.disconnect();
+
+        // TODO: Load menu or gameover state
+        self.state.start('Menu');
     },
 
     // ID received
@@ -238,7 +254,11 @@ BasicGame.Game.prototype = {
     onUpdatePlayer: function(data) {
         self.player.updateMass(data.mass);
         self.player.setPoint(data.point);
-        socket.emit("unfreeze player", {id: self.player.id});
+
+        // Delay 200ms then unfreeze
+        setTimeout(function(){
+            socket.emit("unfreeze player", {id: self.player.id});
+        }, 200);
     },
 
     onNewDot: function(data) {

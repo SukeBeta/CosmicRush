@@ -33,6 +33,7 @@
 <script src="game/states/Boot.js"></script>
 <script src="game/states/Preloader.js"></script>
 <script src="game/states/Game.js"></script>
+<script src="game/states/Menu.js"></script>
 
 
 <script>
@@ -41,7 +42,7 @@
 
     // TODO: change the localhost to server IP address
     // window.socket = io.connect('http://localhost:8000');
-    window.socket = io.connect('http://130.56.76.4:8000/');
+    window.socket = io.connect('http://130.56.73.214:8000/');
     window.scaleRatio = window.devicePixelRatio/3;
 
     startGame();
@@ -50,6 +51,7 @@
 
         game.state.add('Boot', BasicGame.Boot);
         game.state.add('Preloader', BasicGame.Preloader);
+        game.state.add('Menu', BasicGame.Menu);
         game.state.add('Game', BasicGame.Game);
 
         game.state.start('Boot');
