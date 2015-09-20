@@ -134,7 +134,7 @@ Player.prototype.breathe = function() {
  */
 Player.prototype.handleMovement = function() {
 
-    // Player cannot be moved if game is not start
+    // Player cannot be moved if game is not started
     if (!gameStart) {
         return;
     }

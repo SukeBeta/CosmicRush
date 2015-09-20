@@ -60,6 +60,11 @@ function setEventHandlers() {
 function onSocketConnection(socket) {
     console.log("New player has connected: "+ socket.id);
 
+    // Confirm back to client, after 500ms, to ensure the client has enough time to run codes
+    setTimeout(function(){
+        socket.emit("socket confirmed", {});
+    }, 500);
+
     // Listen for client disconnected
     socket.on("disconnect", onClientDisconnect);
 
@@ -114,7 +119,7 @@ function onMovePlayer(data) {
 
     // Player not found
     if (!movePlayer) {
-        console.log("Player not found: "+ this.id);
+        console.log("Player not found for moving: "+ this.id);
         return;
     }
 
