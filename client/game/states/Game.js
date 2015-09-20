@@ -6,6 +6,10 @@
 var MAP_WIDTH = 3000;
 var MAP_HEIGHT = 3000;
 
+// BOOLEAN: is the game start?
+// Can only be manipulated within Game.js
+var gameStart = false;
+
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
     this.game;      //  a reference to the currently running game (Phaser.Game)
@@ -135,6 +139,9 @@ BasicGame.Game.prototype = {
         // Socket connection successful
         socket.on("connect", this.onSocketConnected());
 
+        // Server confirmed and ask for player information
+        socket.on("socket confirmed", this.onSocketConfirmed);
+
         // Socket disconnection
         socket.on("disconnect", this.onSocketDisconnect);
 
@@ -165,13 +172,21 @@ BasicGame.Game.prototype = {
 
     onSocketConnected: function() {
         console.log("Connected to socket server");
+    },
+
+    onSocketConfirmed: function() {
+        console.log("Socket confirmed");
 
         // Send local player data to the game server
         socket.emit("new player", {x: self.player.x, y: self.player.y, character: self.character, mass: self.mass, point: self.point});
+
+        // Game start
+        gameStart = true;
     },
 
     // Socket disconnected
     onSocketDisconnect: function() {
+        gameStart = false;
         console.log("Disconnected from socket server");
         socket.disconnect();
 
@@ -181,6 +196,7 @@ BasicGame.Game.prototype = {
 
     // Game over
     onGameOver: function() {
+        gameStart = false;
         console.log("Game over by server");
         socket.disconnect();
 

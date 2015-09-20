@@ -133,6 +133,12 @@ Player.prototype.breathe = function() {
  * handling inputs from keyboard or gyro
  */
 Player.prototype.handleMovement = function() {
+
+    // Player cannot be moved if game is not start
+    if (!gameStart) {
+        return;
+    }
+
     var self = this;
 
     // Collisions
