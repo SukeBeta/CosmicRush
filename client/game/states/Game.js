@@ -6,9 +6,6 @@
 var MAP_WIDTH = 3000;
 var MAP_HEIGHT = 3000;
 
-// BOOLEAN: is the game start?
-// Can only be manipulated within Game.js
-var gameStart = false;
 
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
@@ -121,6 +118,12 @@ BasicGame.Game.prototype = {
         this.locationText.setText("(" + Math.floor(this.player.x) + "," + Math.floor(this.player.y) + ")");
         this.player.handleMovement(this.dots);
         this.player.breathe();
+
+        // TODO: for debugging Testing
+        if (game.input.keyboard.isDown(Phaser.Keyboard.D))
+        {
+            this.onSocketDisconnect();
+        }
     },
 
     updateStarfield: function() {
@@ -138,9 +141,6 @@ BasicGame.Game.prototype = {
     setEventHandlers: function() {
         // Socket connection successful
         socket.on("connect", this.onSocketConnected());
-
-        // Server confirmed and ask for player information
-        socket.on("socket confirmed", this.onSocketConfirmed);
 
         // Socket disconnection
         socket.on("disconnect", this.onSocketDisconnect);
@@ -172,10 +172,6 @@ BasicGame.Game.prototype = {
 
     onSocketConnected: function() {
         console.log("Connected to socket server");
-    },
-
-    onSocketConfirmed: function() {
-        console.log("Socket confirmed");
 
         // Send local player data to the game server
         socket.emit("new player", {x: self.player.x, y: self.player.y, character: self.character, mass: self.mass, point: self.point});
@@ -188,9 +184,9 @@ BasicGame.Game.prototype = {
     onSocketDisconnect: function() {
         gameStart = false;
         console.log("Disconnected from socket server");
-        socket.disconnect();
+        //socket.disconnect();
 
-        // TODO: Load menu or gameover state
+        // Load menu or gameover state
         self.state.start('Menu');
     },
 
@@ -198,9 +194,16 @@ BasicGame.Game.prototype = {
     onGameOver: function() {
         gameStart = false;
         console.log("Game over by server");
-        socket.disconnect();
+        socket.emit("remove player", {});
 
-        // TODO: Load menu or gameover state
+        // When game is over player is not disconnected with server
+        // but the client just does not emit anything through socket
+
+        if (self.player.getPoint() > highscore) {
+            highscore = self.player.getPoint();
+        }
+
+
         self.state.start('Menu');
     },
 
@@ -265,6 +268,8 @@ BasicGame.Game.prototype = {
         // Remove player from array
         self.remotePlayers.splice(self.remotePlayers.indexOf(removePlayer), 1);
         ground.playertext.setText("Player : " + (self.remotePlayers.length+1) );
+
+        console.log("Player : "+ data.id + " removed");
     },
 
     onUpdatePlayer: function(data) {
