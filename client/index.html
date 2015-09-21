@@ -21,7 +21,7 @@
 
 <div id="gameContainer"></div>
 
-<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
 
 <script src="game/entities/Player.js"></script>
 <script src="game/entities/RemotePlayer.js"></script>
@@ -39,10 +39,10 @@
 <script>
     // Global variables
     window.game = new Phaser.Game("100%", "100%", Phaser.AUTO, 'gameContainer');
-
     // TODO: change the localhost to server IP address
-    // window.socket = io.connect('http://localhost:8000');
-    window.socket = io.connect('http://130.56.75.11:8000/');
+    serverIP = 'http://130.56.79.143:8000/';
+
+    window.socket = io.connect(serverIP);
     window.scaleRatio = window.devicePixelRatio/3;
 
     startGame();

@@ -108,7 +108,17 @@ Player.prototype.setPoint = function(point) {
     ground.scoretext.setText("Score  : "+ this.point);
 };
 
-// Breath
+/**
+ * Get player's point
+ * @returns point {number|*}
+ */
+Player.prototype.getPoint = function() {
+    return this.point;
+};
+
+/**
+ * Create breathing effect for the player
+ */
 Player.prototype.breathe = function() {
 
     if (this.growing) {

@@ -60,11 +60,6 @@ function setEventHandlers() {
 function onSocketConnection(socket) {
     console.log("New player has connected: "+ socket.id);
 
-    // Confirm back to client, after 500ms, to ensure the client has enough time to run codes
-    setTimeout(function(){
-        socket.emit("socket confirmed", {});
-    }, 500);
-
     // Listen for client disconnected
     socket.on("disconnect", onClientDisconnect);
 
@@ -73,6 +68,9 @@ function onSocketConnection(socket) {
 
     // Listen for move player message
     socket.on("move player", onMovePlayer);
+
+    // Listen for remove player message
+    socket.on("remove player", onRemovePlayer);
 
     // Listen for remove dot message
     socket.on("remove dot", onRemoveDot);
@@ -109,6 +107,31 @@ function onNewPlayer(data) {
     }
 }
 
+function onRemovePlayer(data) {
+    console.log("Player has game over: "+ this.id);
+
+    // Find player in array
+    var index = _.findIndex(players, {
+        id : this.id
+    });
+
+    var removePlayer = players[index];
+
+    // Player not found
+    if (!removePlayer) {
+        console.log("Player not found: "+this.id);
+        // Remove the player even it is not found
+        this.broadcast.emit("remove player", {id: this.id});
+        return;
+    }
+
+    // Remove player from players array
+    players.splice(players.indexOf(removePlayer), 1);
+
+    // Broadcast removed player to connected socket clients
+    this.broadcast.emit("remove player", {id: this.id});
+}
+
 function onMovePlayer(data) {
     // Find player in array
     var index = _.findIndex(players, {
@@ -131,6 +154,7 @@ function onMovePlayer(data) {
     movePlayer.setMass(data.mass);
     movePlayer.setPoint(data.point);
 
+
     //TODO: Calculating eating between players
     calculateGameLogic(movePlayer);
 
@@ -146,10 +170,10 @@ function onClientDisconnect() {
         id : this.id
     });
 
-    var removedPlayer = players[index];
+    var removePlayer = players[index];
 
     // Player not found
-    if (!removedPlayer) {
+    if (!removePlayer) {
         console.log("Player not found: "+this.id);
         // Remove the player even it is not found
         this.broadcast.emit("remove player", {id: this.id});
@@ -157,7 +181,7 @@ function onClientDisconnect() {
     }
 
     // Remove player from players array
-    players.splice(players.indexOf(removedPlayer), 1);
+    players.splice(players.indexOf(removePlayer), 1);
 
     // Broadcast removed player to connected socket clients
     this.broadcast.emit("remove player", {id: this.id});
@@ -276,7 +300,7 @@ function calculateGameLogic(player) {
 
                     // Remove eaten if its mass < 5
                     if (eaten.getMass() < 5) {
-                        removePlayer(eaten);
+                        io.to(eaten.getID()).emit("game over", {});
                     }
 
                 }
@@ -298,34 +322,11 @@ function calculateGameLogic(player) {
 
                     // Remove eaten if its mass < 5
                     if (eaten.getMass() < 5) {
-                        removePlayer(eaten);
+                        io.to(eaten.getID()).emit("game over", {});
                     }
                 }
             }
 
         }
     }
-}
-
-
-function removePlayer(player) {
-    // Find player in array
-    var index = _.findIndex(players, {
-        id : player.getID()
-    });
-
-    var removedPlayer = players[index];
-
-    // Player not found
-    if (!removedPlayer) {
-        console.log("Player not found: "+this.id);
-    } else {
-        // Remove player from players array
-        players.splice(players.indexOf(removedPlayer), 1);
-    }
-
-    io.to(player.getID()).emit("disconnect", {});
-
-    // Broadcast removed player to connected socket clients
-    io.emit("remove player", {id: this.id});
 }

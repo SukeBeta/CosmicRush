@@ -122,7 +122,7 @@ BasicGame.Game.prototype = {
         // TODO: for debugging Testing
         if (game.input.keyboard.isDown(Phaser.Keyboard.D))
         {
-            this.onSocketDisconnect();
+            this.onGameOver();
         }
     },
 
