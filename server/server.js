@@ -63,14 +63,14 @@ function onSocketConnection(socket) {
     // Listen for client disconnected
     socket.on("disconnect", onClientDisconnect);
 
+    // Listen for restart message
+    socket.on("restart", onRestart);
+
     // Listen for new player message
     socket.on("new player", onNewPlayer);
 
     // Listen for move player message
     socket.on("move player", onMovePlayer);
-
-    // Listen for remove player message
-    socket.on("remove player", onRemovePlayer);
 
     // Listen for remove dot message
     socket.on("remove dot", onRemoveDot);
@@ -107,8 +107,37 @@ function onNewPlayer(data) {
     }
 }
 
-function onRemovePlayer(data) {
-    console.log("Player has game over: "+ this.id);
+function onMovePlayer(data) {
+    // Find player in array
+    var index = _.findIndex(players, {
+        id : this.id
+    });
+
+    var movePlayer = players[index];
+
+    // Player not found
+    if (!movePlayer) {
+        console.log("Player not found for moving: "+ this.id);
+        return;
+    }
+
+    // Update player position
+    movePlayer.setX(data.x);
+    movePlayer.setY(data.y);
+
+    // Update player mass and point
+    movePlayer.setMass(data.mass);
+    movePlayer.setPoint(data.point);
+
+    //TODO: Calculating eating between players
+    calculateGameLogic(movePlayer);
+
+    // Broadcast updated position to connected socket clients
+    this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), mass: movePlayer.getMass(), point: movePlayer.getPoint()});
+}
+
+function onClientDisconnect() {
+    console.log("Player has disconnected: "+ this.id);
 
     // Find player in array
     var index = _.findIndex(players, {
@@ -132,38 +161,8 @@ function onRemovePlayer(data) {
     this.broadcast.emit("remove player", {id: this.id});
 }
 
-function onMovePlayer(data) {
-    // Find player in array
-    var index = _.findIndex(players, {
-        id : this.id
-    });
-
-    var movePlayer = players[index];
-
-    // Player not found
-    if (!movePlayer) {
-        console.log("Player not found for moving: "+ this.id);
-        return;
-    }
-
-    // Update player position
-    movePlayer.setX(data.x);
-    movePlayer.setY(data.y);
-
-    // Update player mass and point
-    movePlayer.setMass(data.mass);
-    movePlayer.setPoint(data.point);
-
-
-    //TODO: Calculating eating between players
-    calculateGameLogic(movePlayer);
-
-    // Broadcast updated position to connected socket clients
-    this.broadcast.emit("move player", {id: movePlayer.id, x: movePlayer.getX(), y: movePlayer.getY(), mass: movePlayer.getMass(), point: movePlayer.getPoint()});
-}
-
-function onClientDisconnect() {
-    console.log("Player has disconnected: "+ this.id);
+function onRestart() {
+    console.log("Player has restarted: "+ this.id);
 
     // Find player in array
     var index = _.findIndex(players, {
@@ -236,7 +235,7 @@ function onRemoveDot(data) {
 
     // Dot not found
     if (!removeDot) {
-        console.log("Dot not found: "+data.id);
+        console.log("Dot not found for removing: "+data.id);
         return;
     }
 
@@ -278,7 +277,7 @@ function calculateGameLogic(player) {
             var distanceY = player.getY() - players[i].getY();
             var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             // TODO: formula to be determined
-            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 7;
+            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 6.5;
 
             if (distance < safeDistance) {
                 var eater = null,
@@ -303,6 +302,15 @@ function calculateGameLogic(player) {
                         io.to(eaten.getID()).emit("game over", {});
                     }
 
+                    var playerToBeChecked01 = players[i];
+
+                    // Remove the unresponsive player (players[i]) after 2 seconds
+                    // Disable auto break at the moment as not stable
+                    //setTimeout(function(){
+                    //    if (playerToBeChecked01.eatable == false) {
+                    //        breakClient(playerToBeChecked01.getID());
+                    //    }
+                    //}, 2000);
                 }
 
                 // players[i] eats player
@@ -324,9 +332,48 @@ function calculateGameLogic(player) {
                     if (eaten.getMass() < 5) {
                         io.to(eaten.getID()).emit("game over", {});
                     }
+
+                    var playerToBeChecked02 = player;
+
+                    // Remove the unresponsive player (player) after 2 seconds
+                    // Disable auto break at the moment as not stable
+                    //setTimeout(function(){
+                    //    if (playerToBeChecked02.eatable == false) {
+                    //        breakClient(playerToBeChecked02.getID());
+                    //    }
+                    //}, 2000);
                 }
             }
 
         }
     }
+}
+
+/**
+ * Server breaks a client with a specific id
+ * @param id
+ */
+function breakClient(id) {
+    console.log("Break the connection for player: "+ id);
+
+    // Find player in array
+    var index = _.findIndex(players, {
+        id : id
+    });
+
+    var removePlayer = players[index];
+
+    // Player not found
+    if (!removePlayer) {
+        console.log("Player not found for breaking: "+id);
+    } else {
+        // Remove player from players array
+        players.splice(players.indexOf(removePlayer), 1);
+    }
+
+    // Break the connection for player with id
+    io.to(id).emit("disconnect", {});
+
+    // Broadcast removed player to connected socket clients
+    io.emit("remove player", {id: id});
 }

@@ -6,7 +6,6 @@
 var MAP_WIDTH = 3000;
 var MAP_HEIGHT = 3000;
 
-
 BasicGame.Game = function (game) {
     //  When a State is added to Phaser it automatically has the following properties set on it, even if they already exist:
     this.game;      //  a reference to the currently running game (Phaser.Game)
@@ -48,13 +47,17 @@ BasicGame.Game.prototype = {
 
         // Game Environment
         this.game.stage.backgroundColor = '#160b20';
+        this.game.physics.startSystem(Phaser.Physics.ARCADE);
         //this.game.stage.backgroundColor = '#ffffff';
 
         this.game.world.setBounds(0, 0, MAP_WIDTH, MAP_HEIGHT);
 
         // Player
         this.character = _.random(0, 2);
-        this.player = new Player(null, this.rnd.integerInRange(50, MAP_WIDTH-50), this.rnd.integerInRange(50, MAP_HEIGHT-50), self.character);
+        // this.player = new Player(null, this.rnd.integerInRange(50, MAP_WIDTH-50), this.rnd.integerInRange(50, MAP_HEIGHT-50), self.character);
+
+        this.player = new Player(null, this.rnd.integerInRange(100, 500), this.rnd.integerInRange(100, 500), self.character);
+
         this.player.scale.setTo(this.player.radius, this.player.radius);
         this.player.anchor.setTo(0.5, 0.5);
         this.game.camera.follow(this.player);
@@ -90,6 +93,17 @@ BasicGame.Game.prototype = {
         // Socket.io
         // Start listening for events
         this.setEventHandlers();
+
+        // TODO: Spacebar for debugging only
+        key2 = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        key2.onDown.add(function() {
+            console.log("restart");
+
+            socket.emit("restart", {});
+
+            this.state.start('Menu');
+
+        }, this);
     },
 
     update: function () {
@@ -118,12 +132,6 @@ BasicGame.Game.prototype = {
         this.locationText.setText("(" + Math.floor(this.player.x) + "," + Math.floor(this.player.y) + ")");
         this.player.handleMovement(this.dots);
         this.player.breathe();
-
-        // TODO: for debugging Testing
-        if (game.input.keyboard.isDown(Phaser.Keyboard.D))
-        {
-            this.onGameOver();
-        }
     },
 
     updateStarfield: function() {
@@ -160,7 +168,7 @@ BasicGame.Game.prototype = {
         // Player removed message received
         socket.on("remove player", this.onRemovePlayer);
 
-        // TODO:(Not tested) Update player message received
+        // Update player message received
         socket.on("update player", this.onUpdatePlayer);
 
         // New Dot created message received
@@ -175,35 +183,29 @@ BasicGame.Game.prototype = {
 
         // Send local player data to the game server
         socket.emit("new player", {x: self.player.x, y: self.player.y, character: self.character, mass: self.mass, point: self.point});
-
-        // Game start
         gameStart = true;
     },
 
     // Socket disconnected
     onSocketDisconnect: function() {
-        gameStart = false;
         console.log("Disconnected from socket server");
-        //socket.disconnect();
-
-        // Load menu or gameover state
+        // Server breaks the connection and need to refresh to join
+        // TODO: implement refresh page
+        socket.disconnect();
+        gameStart = false;
         self.state.start('Menu');
     },
 
-    // Game over
     onGameOver: function() {
+        console.log("Game is over by the server, restart");
         gameStart = false;
-        console.log("Game over by server");
-        socket.emit("remove player", {});
+        self.restart();
+    },
 
-        // When game is over player is not disconnected with server
-        // but the client just does not emit anything through socket
-
-        if (self.player.getPoint() > highscore) {
-            highscore = self.player.getPoint();
-        }
-
-
+    //
+    restart: function() {
+        console.log("restart");
+        socket.emit("restart", {});
         self.state.start('Menu');
     },
 
@@ -237,7 +239,7 @@ BasicGame.Game.prototype = {
 
         // Player not found
         if (!movePlayer) {
-            console.log("Player not found: " + data.id);
+            // console.log("Player not found: " + data.id);
             return;
         }
 

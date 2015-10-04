@@ -155,22 +155,38 @@ Player.prototype.handleMovement = function() {
     game.physics.arcade.overlap(this, ground.dots, eatingDot, null, this);
 
     if (game.device.desktop) {
+
+        // Keyborad Control TODO: for debubbing only
+        if (game.input.keyboard.isDown(Phaser.Keyboard.LEFT)) {
+            this.body.velocity.y = 0;
+            this.body.velocity.x = -this.speed;
+        } else if (game.input.keyboard.isDown(Phaser.Keyboard.RIGHT)) {
+            this.body.velocity.y = 0;
+            this.body.velocity.x = this.speed;
+        } else if (game.input.keyboard.isDown(Phaser.Keyboard.UP)) {
+            this.body.velocity.x = 0;
+            this.body.velocity.y = -this.speed;
+        } else if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+            this.body.velocity.x = 0;
+            this.body.velocity.y = this.speed;
+        }
+
         // Mouse Control
         // By Mengchen
-        var x = game.input.mousePointer.x + game.camera.x - self.x;
-        var y = game.input.mousePointer.y + game.camera.y - self.y;
-
-        if(!game.math.fuzzyEqual(x, 0, 8)) {
-            self.body.velocity.x = self.speed_factor * x / Math.sqrt(x * x + y * y) * 30;
-        } else {
-            self.body.velocity.x = 0;
-        }
-
-        if(!game.math.fuzzyEqual(y, 0, 8)) {
-            self.body.velocity.y = self.speed_factor * y / Math.sqrt(x * x + y * y) * 30;
-        } else {
-            self.body.velocity.y = 0;
-        }
+        //var x = game.input.mousePointer.x + game.camera.x - self.x;
+        //var y = game.input.mousePointer.y + game.camera.y - self.y;
+        //
+        //if(!game.math.fuzzyEqual(x, 0, 8)) {
+        //    self.body.velocity.x = self.speed_factor * x / Math.sqrt(x * x + y * y) * 30;
+        //} else {
+        //    self.body.velocity.x = 0;
+        //}
+        //
+        //if(!game.math.fuzzyEqual(y, 0, 8)) {
+        //    self.body.velocity.y = self.speed_factor * y / Math.sqrt(x * x + y * y) * 30;
+        //} else {
+        //    self.body.velocity.y = 0;
+        //}
     } else {
         // Gyro control
         // setting gyroscope update frequency
@@ -195,6 +211,8 @@ Player.prototype.handleMovement = function() {
     // collisionHandler
     // collide with a dot
     function eatingDot(player, dot) {
+        console.log("Player eats dot: " + dot.id);
+
         //kill dot
         dot.kill();
 
