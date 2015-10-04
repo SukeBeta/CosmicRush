@@ -18,6 +18,11 @@ var gameState = false;
 BasicGame.Preloader.prototype = {
 
     preload: function () {
+        // Only allow player to play in portrait orientation
+        this.game.scale.forceOrientation(false, true);
+        this.game.scale.enterIncorrectOrientation.add(handleIncorrect);
+        this.game.scale.leaveIncorrectOrientation.add(handleCorrect);
+
         this.game.stage.backgroundColor = '#100826';
 
         var loadingLabel = this.game.add.text(this.game.world.centerX, this.game.world.centerY - 100, 'loading...', {font: '30px Arial', fill: '#ffffff'});
@@ -39,3 +44,15 @@ BasicGame.Preloader.prototype = {
         this.game.state.start('Menu');
     }
 };
+
+function handleIncorrect(){
+    if(!game.device.desktop){
+        document.getElementById("turn").style.display = "block";
+    }
+}
+
+function handleCorrect(){
+    if(!game.device.desktop){
+        document.getElementById("turn").style.display = "none";
+    }
+}
