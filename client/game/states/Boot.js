@@ -1,13 +1,16 @@
 /**
  * Created by Yunen on 26/05/15.
  */
-var BasicGame = {};
+
+var BasicGame = {
+    playing: false
+};
+
+WebFontConfig = {
+    google: {families: ['Press+Start+2P::latin']}
+};
 
 BasicGame.Boot = function (game) {
-    var player = null,
-        remotePlayers = null,
-        dots = null,
-        character = null;
 };
 
 BasicGame.Boot.prototype = {
@@ -24,9 +27,10 @@ BasicGame.Boot.prototype = {
     },
 
     preload: function () {
-        //  Here we load the assets required for our preloader (in this case a background and a loading bar)
-        // this.load.image('preloaderBackground', 'images/preloader_background.jpg');
-        // this.load.image('preloaderBar', 'images/preloadr_bar.png');
+        //  Load the Google WebFont Loader script
+        this.game.load.script('webfont', 'game/libs/webfont.js');
+
+        this.game.load.image('progressBar', 'game/assets/progressBar.png');
     },
 
     create: function () {
@@ -36,5 +40,4 @@ BasicGame.Boot.prototype = {
         this.state.start('Preloader');
 
     }
-
 };

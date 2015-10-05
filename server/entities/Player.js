@@ -13,11 +13,14 @@
  * @param point
  * @constructor
  */
-var Player = function(id, x, y, character, mass, point) {
+var Player = function(id, x, y, character, R, G, B, mass, point) {
     this.id = id;
     this.x = x;
     this.y = y;
     this.character = character;
+    this.R = R;
+    this.G = G;
+    this.B = B;
     this.mass = mass;
     this.point = point;
     // freeze player after eaten for a while to avoid repeated calculation
@@ -58,6 +61,15 @@ Player.prototype = {
     },
     setPoint: function(point) {
         this.point = point;
+    },
+    getR: function() {
+        return this.R;
+    },
+    getG: function() {
+        return this.G;
+    },
+    getB: function() {
+        return this.B;
     }
 };
 

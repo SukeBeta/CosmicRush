@@ -8,12 +8,6 @@ BasicGame.Preloader = function (game) {
 // highscore
 var highscore = 0;
 
-// gameStart indicator
-var gameStart = false;
-
-// game state indicator
-var gameState = false;
-
 
 BasicGame.Preloader.prototype = {
 

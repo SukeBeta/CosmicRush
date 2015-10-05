@@ -80,19 +80,19 @@ function onSocketConnection(socket) {
 }
 
 function onNewPlayer(data) {
-    var newPlayer = new Player(this.id, data.x, data.y, data.character, data.mass, data.point);
+    var newPlayer = new Player(this.id, data.x, data.y, data.character, data.R, data.G, data.B, data.mass, data.point);
 
     // Assign an ID to the new player
     this.emit("assign an ID", {id: this.id});
 
     // Broadcast new player to connected socket clients
-    this.broadcast.emit("new player", {id: this.id, x: data.x, y: data.y, character: data.character, mass: data.mass, point: data.point});
+    this.broadcast.emit("new player", {id: this.id, x: data.x, y: data.y, character: data.character, R: data.R, G: data.G, B: data.B, mass: data.mass, point: data.point});
 
     // Send existing players to the new player
     var i, existingPlayer;
     for (i = 0; i < players.length; i++) {
         existingPlayer = players[i];
-        this.emit("new player", {id: existingPlayer.getID(), x: existingPlayer.getX(), y: existingPlayer.getY(), character: existingPlayer.getCharacter(), mass: existingPlayer.getMass(), point: existingPlayer.getPoint()});
+        this.emit("new player", {id: existingPlayer.getID(), x: existingPlayer.getX(), y: existingPlayer.getY(), character: existingPlayer.getCharacter(), R:existingPlayer.getR(), G:existingPlayer.getG(), B:existingPlayer.getB(),mass: existingPlayer.getMass(), point: existingPlayer.getPoint()});
     }
 
     // Add new player to the players array
@@ -129,7 +129,7 @@ function onMovePlayer(data) {
     movePlayer.setMass(data.mass);
     movePlayer.setPoint(data.point);
 
-    //TODO: Calculating eating between players
+    // Calculating eating between players
     calculateGameLogic(movePlayer);
 
     // Broadcast updated position to connected socket clients
@@ -235,12 +235,15 @@ function onRemoveDot(data) {
 
     // Dot not found
     if (!removeDot) {
-        console.log("Dot not found for removing: "+data.id);
+        // Yunen
+        // console.log("Dot not found: "+data.id);
         return;
     }
 
     // Remove player from players array
     dots.splice(dots.indexOf(removeDot), 1);
+
+    console.log("Dot removed: "+data.id);
 
     // Broadcast removed player to connected socket clients
     this.broadcast.emit("remove dot", {id: data.id});

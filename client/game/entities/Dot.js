@@ -21,12 +21,11 @@ Dot.prototype.generate = function() {
     var circle = game.add.bitmapData(bitmapSize, bitmapSize);
     //  star(canvas, x of center, y of center, radius, number of points, fraction of radius for inset)
 
-
     function star(ctx, x, y, r, p, m)
     {
         ctx.save();
         var gradientFill = ctx.createRadialGradient(bitmapSize/2, bitmapSize/2, 0, bitmapSize/2, bitmapSize/2, bitmapSize);
-        gradientFill.addColorStop(0,'rgba(255,253,0,0.5)');
+        gradientFill.addColorStop(0,'RGBA(255, 254, 147, 0.5)');
         gradientFill.addColorStop(1,'rgba(255,253,0,0)');
         ctx.fillStyle = gradientFill;
         ctx.beginPath();
@@ -46,7 +45,7 @@ Dot.prototype.generate = function() {
     function star2(ctx, x, y, r, p, m)
     {
         ctx.save();
-        ctx.fillStyle = "rgba(255,255,167,0.5)";
+        ctx.fillStyle = "RGBA(255, 240, 156, 0.9)";
         ctx.beginPath();
         ctx.translate(x, y);
         ctx.moveTo(0,0-r);
