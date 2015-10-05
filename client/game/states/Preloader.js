@@ -23,6 +23,8 @@ BasicGame.Preloader.prototype = {
         this.game.scale.enterIncorrectOrientation.add(handleIncorrect);
         this.game.scale.leaveIncorrectOrientation.add(handleCorrect);
 
+        this.game.load.image('tinystar', 'game/assets/tiny_gold_star.png');
+
         this.game.stage.backgroundColor = '#100826';
 
         var loadingLabel = this.game.add.text(this.game.world.centerX, this.game.world.centerY - 100, 'loading...', {font: '30px Arial', fill: '#ffffff'});

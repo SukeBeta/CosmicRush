@@ -198,6 +198,9 @@ BasicGame.Game.prototype = {
 
     onGameOver: function() {
         console.log("Game is over by the server, restart");
+        if (ground.player.getPoint() > highscore) {
+            highscore = ground.player.getPoint();
+        }
         gameStart = false;
         self.restart();
     },
