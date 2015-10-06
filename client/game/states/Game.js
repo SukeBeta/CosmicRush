@@ -57,7 +57,12 @@ BasicGame.Game.prototype = {
         this.game.camera.follow(this.player);
 
         // Score Text
-        var style = {font: '40px "Press Start 2P"', fill: "white"};
+        var style;
+        if (game.device.desktop) {
+            style = {font: '30px "Press Start 2P"', fill: "white"};
+        } else {
+            style = {font: '40px "Press Start 2P"', fill: "white"};
+        }
         this.scoretext =  this.game.add.text(10, 10, "", style);
         this.scoretext.setText("Score  : " + 0);
         this.scoretext.fixedToCamera = 1;
@@ -81,12 +86,17 @@ BasicGame.Game.prototype = {
 
         // Socket.io
         // Start listening for events
-        this.setEventHandlers();
+        if (firstRun) {
+            firstRun = false;
+            this.setEventHandlers();
+        } else {
+            this.onSocketConnected();
+        }
 
         // TODO: Spacebar for debugging only
         //key2 = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         //key2.onDown.add(function() {
-        //    self.restart();
+        //    self.onGameOver();
         //}, this);
     },
 

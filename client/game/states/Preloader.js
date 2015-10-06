@@ -8,6 +8,9 @@ BasicGame.Preloader = function (game) {
 // highscore
 var highscore = 0;
 
+// first run indicator
+var firstRun = true;
+
 
 BasicGame.Preloader.prototype = {
 
