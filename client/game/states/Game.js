@@ -50,6 +50,16 @@ BasicGame.Game.prototype = {
         this.B = _.random(0, 255);
         this.character = _.random(0, 18);
 
+        // Yellow sprite for shining effect
+        this.yellowShiningEffect = this.game.add.sprite(0, 0, 'yellow');
+        this.yellowShiningEffect.alpha = 0;
+        this.yellowShiningEffect.scale.setTo(100,100);
+
+        // Red sprite for shining effect
+        this.redShiningEffect = this.game.add.sprite(0, 0, 'red');
+        this.redShiningEffect.alpha = 0;
+        this.redShiningEffect.scale.setTo(100 ,100);
+
         this.player = new Player(null, this.rnd.integerInRange(200, 500), this.rnd.integerInRange(100, 800), this.character, this.R, this.G, this.B);
 
         this.player.scale.setTo(this.player.radius, this.player.radius);

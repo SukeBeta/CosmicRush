@@ -173,6 +173,12 @@ Player.prototype.breathe = function() {
  * @param mass
  */
 Player.prototype.updateMass = function(mass) {
+    // Shining effects
+    if (mass > this.mass + 2) {
+        game.add.tween(ground.yellowShiningEffect).to({alpha:0.7},100).to({alpha:0},100).start();
+    } else if (mass < this.mass - 2) {
+        game.add.tween(ground.redShiningEffect).to({alpha:0.7},100).to({alpha:0},100).start();
+    }
     this.mass = mass;
     ground.masstext.setText("Mass   : "+ Math.floor(this.mass * 10) / 10);
     this.speed_factor = MASS_SPEED_CONSTANT/Math.sqrt(this.mass);
