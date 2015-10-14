@@ -175,9 +175,9 @@ Player.prototype.breathe = function() {
 Player.prototype.updateMass = function(mass) {
     // Shining effects
     if (mass > this.mass + 2) {
-        game.add.tween(ground.yellowShiningEffect).to({alpha:0.7},100).to({alpha:0},100).start();
+        game.add.tween(ground.yellowShiningEffect).to({alpha:0.7},100).to({alpha:0},300).start();
     } else if (mass < this.mass - 2) {
-        game.add.tween(ground.redShiningEffect).to({alpha:0.7},100).to({alpha:0},100).start();
+        game.add.tween(ground.redShiningEffect).to({alpha:0.7},100).to({alpha:0},300).start();
     }
     this.mass = mass;
     ground.masstext.setText("Mass   : "+ Math.floor(this.mass * 10) / 10);
