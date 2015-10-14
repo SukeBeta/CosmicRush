@@ -153,7 +153,7 @@ BasicGame.Game.prototype = {
     },
 
     onSocketConnected: function() {
-        console.log("Connected to socket server");
+        console.log("Connecting to socket server");
 
         // Send local player data to the game server
         socket.emit("new player", {x: self.player.x, y: self.player.y, character: self.character, R: self.R, G: self.G, B: self.B, mass: self.mass, point: self.point});

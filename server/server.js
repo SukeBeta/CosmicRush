@@ -193,10 +193,10 @@ function generateNewDot() {
     setInterval(function () {
         // Keep generating until full
         if (dots.length < MAX_DOTS) {
-            var x, y, newDot;
+            var i, x, y, newDot;
 
             if (dots.length < MAX_DOTS / 20) {
-                for (var i = 0; i < 3; i++) {
+                for (i = 0; i < 8; i++) {
                     x = Math.floor(Math.random() * MAP_WIDTH);
                     y = Math.floor(Math.random() * MAP_HEIGHT);
 
@@ -206,7 +206,18 @@ function generateNewDot() {
 
                     io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
                 }
-            } else {
+            } else if (dots.length < MAX_DOTS / 3) {
+                for (i = 0; i < 3; i++) {
+                    x = Math.floor(Math.random() * MAP_WIDTH);
+                    y = Math.floor(Math.random() * MAP_HEIGHT);
+
+                    newDot = new Dot(dotCounter++, x, y);
+
+                    dots.push(newDot);
+
+                    io.emit("new dot", {id: newDot.id, x: newDot.x, y: newDot.y});
+                }
+            } else{
 
                 x = Math.floor(Math.random() * MAP_WIDTH);
                 y = Math.floor(Math.random() * MAP_HEIGHT);

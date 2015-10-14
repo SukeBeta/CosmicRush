@@ -20,7 +20,7 @@ BasicGame.Preloader.prototype = {
         this.game.scale.enterIncorrectOrientation.add(handleIncorrect);
         this.game.scale.leaveIncorrectOrientation.add(handleCorrect);
 
-        this.game.load.image('tinystar', 'game/assets/tiny_gold_star.png');
+        this.game.load.image('star', 'game/assets/star.png');
 
         this.game.stage.backgroundColor = '#100826';
 

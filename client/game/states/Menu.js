@@ -47,34 +47,40 @@ BasicGame.Menu.prototype = {
         menu.distance = 300;
         menu.speed = 6;
 
-        menu.max = 20;
+        menu.max = 40;
         menu.xx = [];
         menu.yy = [];
         menu.zz = [];
 
-        menu.star = this.game.make.sprite(0, 0, 'tinystar');
-        menu.texture = this.game.add.renderTexture(window.innerWidth, window.innerHeight, 'texture');
+        menu.sprites = this.game.add.spriteBatch();
+        menu.stars = [];
 
-        this.game.add.sprite(0, 0, menu.texture);
 
         for (var i = 0; i < menu.max; i++)
         {
             menu.xx[i] = Math.floor(Math.random() * window.innerWidth) - window.innerWidth / 2;
             menu.yy[i] = Math.floor(Math.random() * window.innerHeight) - window.innerHeight / 2;
             menu.zz[i] = Math.floor(Math.random() * 1700) - 100;
+
+            var star = this.game.make.sprite(0, 0, 'star');
+            star.anchor.set(0.5);
+
+            menu.sprites.addChild(star);
+
+            menu.stars.push(star);
+
         }
 
 
     },
 
     update: function() {
-        menu.texture.clear();
 
         for (var i = 0; i < menu.max; i++)
         {
-            var perspective = menu.distance / (menu.distance - menu.zz[i]);
-            var x = window.innerWidth / 2 + menu.xx[i] * perspective;
-            var y = window.innerHeight / 2 + menu.yy[i] * perspective;
+            menu.stars[i].perspective = menu.distance / (menu.distance - menu.zz[i]);
+            menu.stars[i].x = window.innerWidth / 2 + menu.xx[i] * menu.stars[i].perspective;
+            menu.stars[i].y = window.innerHeight / 2 + menu.yy[i] * menu.stars[i].perspective;
 
             menu.zz[i] += menu.speed;
 
@@ -83,7 +89,10 @@ BasicGame.Menu.prototype = {
                 menu.zz[i] -= 600;
             }
 
-            menu.texture.renderXY(menu.star, x, y);
+            menu.stars[i].alpha = Math.min(menu.stars[i].perspective / 2, 1);
+            menu.stars[i].scale.set(menu.stars[i].perspective / 2);
+            menu.stars[i].rotation += 0.1;
+
         }
     },
 
