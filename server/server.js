@@ -415,10 +415,10 @@ function bigMonster() {
     monster.R = 237;
     monster.G = 14;
     monster.B = 51;
-    monster.mass = 150;
+    monster.mass = 300;
     monster.point = 0;
 
-    monster.speed = 60;
+    monster.speed = 50;
     var plusOrMinus;
 
 
@@ -460,13 +460,16 @@ function bigMonster() {
         // Calculating eating between players
         calculateGameLogic(moveMonster);
 
+        // Set back mass
+        moveMonster.setMass(monster.mass);
+
         // Broadcast updated position to connected socket clients
         io.emit("move player", {id: moveMonster.id, x: moveMonster.getX(), y: moveMonster.getY(), mass: moveMonster.getMass(), point: moveMonster.getPoint()});
     }, 50);
 
     // 3. Detect outbound and reset
     setInterval(function() {
-        if (monster.x > MAP_WIDTH + 70 || monster.y > MAP_HEIGHT + 70 || monster.x < -70 || monster.y < -70) {
+        if (monster.x > MAP_WIDTH + 30 || monster.y > MAP_HEIGHT + 30 || monster.x < -30 || monster.y < -30) {
             console.log("Monster Outbounds! Reset");
 
             // reset speed
@@ -476,11 +479,11 @@ function bigMonster() {
 
             // reset starting point;
             if (monster.speedX < 0) {
-                monster.x = MAP_WIDTH + 20;
+                monster.x = MAP_WIDTH + 10;
             } else {
-                monster.x = -20;
+                monster.x = -10;
             }
-            monster.y = Math.random() * (MAP_HEIGHT + 40) - 20;
+            monster.y = Math.random() * (MAP_HEIGHT + 20) - 10;
         }
     }, 100);
 
