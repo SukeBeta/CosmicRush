@@ -48,6 +48,8 @@ function init() {
     setEventHandlers();
     // Namespaces
     generateNewDot();
+    // TODO: Server's Big Monster
+    bigMonster();
 }
 
 // Event handlers
@@ -75,7 +77,7 @@ function onSocketConnection(socket) {
     // Listen for remove dot message
     socket.on("remove dot", onRemoveDot);
 
-    // TODO: (NOT TESTED) unfreeze player
+    // unfreeze player
     socket.on("unfreeze player", onUnfreezePlayer);
 }
 
@@ -233,7 +235,7 @@ function generateNewDot() {
 }
 
 /**
- * TODO: Remove a dot from map (Not fully working)
+ * Remove a dot from map
  * Usually called by the game logic
  */
 function onRemoveDot(data) {
@@ -291,7 +293,7 @@ function calculateGameLogic(player) {
             var distanceY = player.getY() - players[i].getY();
             var distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
             // TODO: formula to be determined
-            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 6.5;
+            var safeDistance = (Math.sqrt(player.getMass())+Math.sqrt(players[i].getMass())) * 7;
 
             if (distance < safeDistance) {
                 var eater = null,
@@ -307,12 +309,16 @@ function calculateGameLogic(player) {
                     eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
                     eaten.setMass( eaten.getMass()/2 );
 
-                    // TODO: send message back to player to update mass and score
-                    io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
+                    // send message back to player to update mass and score
+                    if (eater.getID() != 'MONSTER') {
+                        io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
+                    } else {
+                        console.log("Monster now has " + eater.getPoint() + " points!")
+                    }
                     io.to(eaten.getID()).emit("update player", {mass: eaten.getMass(), point: eaten.getPoint()});
 
                     // Remove eaten if its mass < 5
-                    if (eaten.getMass() < 5) {
+                    if (eaten.getMass() < 10) {
                         io.to(eaten.getID()).emit("game over", {});
                     }
 
@@ -338,12 +344,16 @@ function calculateGameLogic(player) {
                     eater.setPoint( eater.getPoint() + Math.floor(eaten.getMass()/2));
                     eaten.setMass( eaten.getMass()/2 );
 
-                    // TODO: send message back to player to update mass and score
-                    io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
+                    // send message back to player to update mass and score
+                    if (eater.getID() != 'MONSTER') {
+                        io.to(eater.getID()).emit("update player", {mass: eater.getMass(), point: eater.getPoint()});
+                    } else {
+                        console.log("Monster now has " + eater.getPoint() + " points!")
+                    }
                     io.to(eaten.getID()).emit("update player", {mass: eaten.getMass(), point: eaten.getPoint()});
 
                     // Remove eaten if its mass < 5
-                    if (eaten.getMass() < 5) {
+                    if (eaten.getMass() < 10) {
                         io.to(eaten.getID()).emit("game over", {});
                     }
 
@@ -390,4 +400,98 @@ function breakClient(id) {
 
     // Broadcast removed player to connected socket clients
     io.emit("remove player", {id: id});
+}
+
+/**
+ * Server generates and updates a monster to chase players
+ */
+function bigMonster() {
+    // 0. Monster's data
+    var monster = {};
+    monster.id = 'MONSTER';
+    monster.x = MAP_WIDTH / 2;
+    monster.y = MAP_HEIGHT / 2;
+    monster.character = 1;
+    monster.R = 237;
+    monster.G = 14;
+    monster.B = 51;
+    monster.mass = 150;
+    monster.point = 0;
+
+    monster.speed = 60;
+    var plusOrMinus;
+
+
+    // 1. create monster
+    {
+        var newMonster = new Player(monster.id, monster.x, monster.y, monster.character, monster.R, monster.G, monster.B, monster.mass, monster.point);
+
+        // Broadcast new Monster to connected socket clients
+        io.emit("new player", {id: monster.id, x: monster.x, y: monster.y, character: monster.character, R: monster.R, G: monster.G, B: monster.B, mass: monster.mass, point: monster.point});
+
+        // Add new player to the players array
+        players.push(newMonster);
+
+        // Generate initial speed for monster;
+        monster.speedX = Math.random() * monster.speed * 2 - monster.speed;
+        plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+        monster.speedY = calculateSpeedY(monster.speed, monster.speedX) * plusOrMinus;
+        console.log("Monster speed X is " + monster.speedX);
+        console.log("Monster speed Y is " + monster.speedY);
+    }
+
+    // 2. update monster
+    setInterval(function(){
+        // Find player in array
+        var index = _.findIndex(players, {
+            id : monster.id
+        });
+
+        var moveMonster = players[index];
+
+        // Update position
+        monster.x += monster.speedX;
+        monster.y += monster.speedY;
+
+        // Update player position
+        moveMonster.setX(monster.x);
+        moveMonster.setY(monster.y);
+
+        // Calculating eating between players
+        calculateGameLogic(moveMonster);
+
+        // Broadcast updated position to connected socket clients
+        io.emit("move player", {id: moveMonster.id, x: moveMonster.getX(), y: moveMonster.getY(), mass: moveMonster.getMass(), point: moveMonster.getPoint()});
+    }, 50);
+
+    // 3. Detect outbound and reset
+    setInterval(function() {
+        if (monster.x > MAP_WIDTH + 70 || monster.y > MAP_HEIGHT + 70 || monster.x < -70 || monster.y < -70) {
+            console.log("Monster Outbounds! Reset");
+
+            // reset speed
+            monster.speedX = Math.random() * monster.speed * 2 - monster.speed;
+            plusOrMinus = Math.random() < 0.5 ? -1 : 1;
+            monster.speedY = calculateSpeedY(monster.speed, monster.speedX) * plusOrMinus;
+
+            // reset starting point;
+            if (monster.speedX < 0) {
+                monster.x = MAP_WIDTH + 20;
+            } else {
+                monster.x = -20;
+            }
+            monster.y = Math.random() * (MAP_HEIGHT + 40) - 20;
+        }
+    }, 100);
+
+}
+
+/**
+ * Utility function to calculate speed in y direction for big monster
+ * @param speed
+ * @param speedX
+ * @returns speedY
+ */
+function calculateSpeedY(speed, speedX) {
+    return Math.sqrt(speed * speed - speedX * speedX);
 }
