@@ -470,7 +470,6 @@ function bigMonster() {
     // 3. Detect outbound and reset
     setInterval(function() {
         if (monster.x > MAP_WIDTH + 30 || monster.y > MAP_HEIGHT + 30 || monster.x < -30 || monster.y < -30) {
-            console.log("Monster Outbounds! Reset");
 
             // reset speed
             monster.speedX = Math.random() * monster.speed * 2 - monster.speed;

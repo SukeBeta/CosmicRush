@@ -15,10 +15,9 @@ BasicGame.Menu.prototype = {
         var w = 320;
         var h = 400;
 
-        var logo = this.game.add.text(window.innerWidth / 2, window.innerHeight - 50, 'COSMIC RUSH', { font: '50px Arial', fill: '#fff' });
+        var logo = this.game.add.sprite(window.innerWidth / 2, 50, 'cosmicRush');
         logo.anchor.setTo(0.5, 0.5);
-        logo.setShadow(5, 5, 'rgba(0,0,0,0.5)', 5);
-        this.game.add.tween(logo).to({ y: h / 2 - 100 }, 1500, Phaser.Easing.Bounce.Out).start();
+        this.game.add.tween(logo).to({ y: window.innerHeight * 3 / 10 }, 1500, Phaser.Easing.Bounce.Out).start();
 
         this.cursor = this.game.input.keyboard.createCursorKeys();
         this.spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
