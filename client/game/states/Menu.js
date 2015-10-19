@@ -17,6 +17,9 @@ BasicGame.Menu.prototype = {
 
         var logo = this.game.add.sprite(window.innerWidth / 2, 50, 'cosmicRush');
         logo.anchor.setTo(0.5, 0.5);
+        if (!this.game.device.desktop) {
+            logo.scale.setTo(1.5 ,1.5);
+        }
         this.game.add.tween(logo).to({ y: window.innerHeight * 3 / 10 }, 1500, Phaser.Easing.Bounce.Out).start();
 
         this.cursor = this.game.input.keyboard.createCursorKeys();
@@ -24,23 +27,27 @@ BasicGame.Menu.prototype = {
         this.mousePointer = this.game.input.mousePointer;
         this.pointer = this.game.input.pointer1;
 
+        var bulletinText = this.game.add.text(window.innerWidth / 2, window.innerHeight / 2 + 10 , bulletin, {
+            font: '25px Arial', fill: '#fff',
+            wordWrap: true, wordWrapWidth: 500
+        });
+        bulletinText.anchor.setTo(0.5, 0.5);
+
         if (highscore > 0) {
-            var highscoreText = this.game.add.text(window.innerWidth / 2, window.innerHeight / 2 , 'High Score: ' + highscore , { font: '40px Arial', fill: '#fff' });
+            var highscoreText = this.game.add.text(window.innerWidth / 2, window.innerHeight / 2 + 60 , 'High Score: ' + highscore , { font: '40px Arial', fill: '#fff' });
             highscoreText.anchor.setTo(0.5, 0.5);
         }
 
-        var text;
         if(this.game.device.desktop){
-            text = 'press the space to start';
             var spaceKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
             spaceKey.onDown.addOnce(this.start,this);
-        }else {
-            text = 'touch the screen to start';
-            this.game.input.onDown.addOnce(this.start, this);
         }
 
-        var startLabel = this.game.add.text(window.innerWidth / 2, window.innerHeight - 80,text,{font:'25px Arial',fill:'#fff'});
-        startLabel.anchor.setTo(0.5,0.5);
+        var startButtonLabel = this.game.add.button(window.innerWidth / 2, window.innerHeight * 4 / 5, 'startButton', this.start, this);
+        startButtonLabel.anchor.setTo(0.5,0.5);
+        if (!this.game.device.desktop) {
+            startButtonLabel.scale.setTo(2 ,2);
+        }
 
         // Starfield
         menu.distance = 300;
@@ -96,6 +103,8 @@ BasicGame.Menu.prototype = {
     },
 
     start: function() {
-        this.game.state.start('Game');
+        if (!restartLock) {
+            this.game.state.start('Game');
+        }
     }
 };

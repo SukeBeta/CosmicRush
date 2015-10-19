@@ -11,6 +11,12 @@ var highscore = 0;
 // first run indicator
 var firstRun = true;
 
+// restart lock
+var restartLock = false;
+
+// notice board message
+var bulletin = "This game is currently under development. Thank you for testing!";
+
 
 BasicGame.Preloader.prototype = {
 
@@ -21,6 +27,7 @@ BasicGame.Preloader.prototype = {
         this.game.scale.leaveIncorrectOrientation.add(handleCorrect);
 
         this.game.load.image('cosmicRush', 'game/assets/CosmicRushTitle.png');
+        this.game.load.image('startButton', 'game/assets/startButton.png');
         this.game.load.image('star', 'game/assets/star.png');
         this.game.load.image('yellow', 'game/assets/yellow.png');
         this.game.load.image('red', 'game/assets/red.png');

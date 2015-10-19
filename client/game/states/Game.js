@@ -176,11 +176,26 @@ BasicGame.Game.prototype = {
         // TODO: implement refresh page
         socket.disconnect();
         BasicGame.playing = false;
+        restartLock = true;
+        bulletin = "Please refresh the page";
         self.state.start('Menu');
     },
 
     onGameOver: function() {
         console.log("Game is over by the server, restart");
+        bulletin = "Score: " + ground.player.getPoint();
+        if (ground.player.getPoint() > 100) {
+            bulletin = "Good Job! Score: " + ground.player.getPoint();
+        }
+        if (ground.player.getPoint() > 300) {
+            bulletin = "Awesome! Score: " + ground.player.getPoint();
+        }
+        if (ground.player.getPoint() > 600) {
+            bulletin = "Unbelievable! Score: " + ground.player.getPoint();
+        }
+        if (ground.player.getPoint() > 1000) {
+            bulletin = "Serious!? Score: " + ground.player.getPoint();
+        }
         if (ground.player.getPoint() > highscore) {
             highscore = ground.player.getPoint();
         }
