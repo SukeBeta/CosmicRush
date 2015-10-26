@@ -183,18 +183,18 @@ BasicGame.Game.prototype = {
 
     onGameOver: function() {
         console.log("Game is over by the server, restart");
-        bulletin = "Score: " + ground.player.getPoint();
+        bulletin = "You scored " + ground.player.getPoint() + " points!";
         if (ground.player.getPoint() > 100) {
-            bulletin = "Good Job! Score: " + ground.player.getPoint();
+            bulletin = "Good Job! You scored " + ground.player.getPoint() + " points!";
         }
         if (ground.player.getPoint() > 300) {
-            bulletin = "Awesome! Score: " + ground.player.getPoint();
+            bulletin = "Awesome! You scored " + ground.player.getPoint() + " points!";
         }
         if (ground.player.getPoint() > 600) {
-            bulletin = "Unbelievable! Score: " + ground.player.getPoint();
+            bulletin = "Unbelievable! You scored " + ground.player.getPoint() + " points!";
         }
         if (ground.player.getPoint() > 1000) {
-            bulletin = "Serious!? Score: " + ground.player.getPoint();
+            bulletin = "Serious!? You scored " + ground.player.getPoint() + " points!";
         }
         if (ground.player.getPoint() > highscore) {
             highscore = ground.player.getPoint();

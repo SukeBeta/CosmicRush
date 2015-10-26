@@ -40,6 +40,15 @@ BasicGame.Preloader.prototype = {
         var progressBar = this.game.add.sprite(this.game.world.centerX, this.game.world.centerY, 'progressBar');
         progressBar.anchor.setTo(0.5, 0.5);
         this.game.load.setPreloadSprite(progressBar);
+
+        if(this.game.device.desktop){
+            bulletin = "Use the mouse to control. ";
+        } else {
+            bulletin = "Tilt the device to control. ";
+        }
+        bulletin += "Scoring by eating stars and smaller players. ";
+        bulletin += "Share the link and invite friends to play with you in real time. ";
+        bulletin += "Have fun!";
     },
 
     create: function () {
