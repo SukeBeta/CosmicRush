@@ -57,10 +57,14 @@ BasicGame.Menu.prototype = {
             }, this);
             tweetButtonLabel.anchor.setTo(0.5,0.5);
 
-            startButtonLabel.x = window.innerWidth * 4 / 10;
-            tweetButtonLabel.x = window.innerWidth * 6 / 10;
+            startButtonLabel.x = window.innerWidth * 0.35;
+            tweetButtonLabel.x = window.innerWidth * 0.65;
             if (!this.game.device.desktop) {
-                twButtonLabel.scale.setTo(2 ,2);
+                tweetButtonLabel.scale.setTo(2 ,2);
+                startButtonLabel.x = window.innerWidth * 0.5;
+                tweetButtonLabel.x = window.innerWidth * 0.5;
+                startButtonLabel.y = window.innerWidth * 0.7;
+                tweetButtonLabel.y = window.innerWidth * 0.8;
             }
         }
 
