@@ -43,10 +43,25 @@ BasicGame.Menu.prototype = {
             spaceKey.onDown.addOnce(this.start,this);
         }
 
-        var startButtonLabel = this.game.add.button(window.innerWidth / 2, window.innerHeight * 4 / 5, 'startButton', this.start, this);
+        // Start button
+        var startButtonLabel = this.game.add.button(window.innerWidth / 2, window.innerHeight * 8 / 10, 'startButton', this.start, this);
         startButtonLabel.anchor.setTo(0.5,0.5);
         if (!this.game.device.desktop) {
             startButtonLabel.scale.setTo(2 ,2);
+        }
+
+        // Tweet button
+        if (highscore > 0) {
+            var tweetButtonLabel = this.game.add.button(window.innerWidth / 2, window.innerHeight * 8 / 10, 'tweetButton', function(){
+                share('twitter');
+            }, this);
+            tweetButtonLabel.anchor.setTo(0.5,0.5);
+
+            startButtonLabel.x = window.innerWidth * 4 / 10;
+            tweetButtonLabel.x = window.innerWidth * 6 / 10;
+            if (!this.game.device.desktop) {
+                twButtonLabel.scale.setTo(2 ,2);
+            }
         }
 
         // Starfield
